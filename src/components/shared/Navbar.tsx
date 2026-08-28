@@ -1,10 +1,51 @@
+
+import { Button } from "@/components/ui/button";
+import Logo from "./Logo";
+import NavLink from "./NavLink";
+import MobileNav from "./MobileNav";
+
+const NAV_ITEMS = [
+  { label: "Home", href: "/" },
+  { label: "Explore", href: "/explore" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
+
 export default function Navbar() {
   return (
-    <nav className="p-6 border-b border-slate-200">
-      <h2 className="text-xl font-bold text-brand-primary">Navbar Section</h2>
-      <p className="text-xl  mt-1 text-brand-accent">
-        Developer- 1 - Kibrary: Make this responsive. Include logo, nav links, and Auth buttons/User Profile dropdown.
-      </p>
-    </nav>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto flex h-16 items-center px-4">
+        
+        {/* Desktop View */}
+        <div className="hidden md:flex items-center justify-between w-full">
+          <Logo/>
+
+          <nav className="flex items-center space-x-6">
+            {NAV_ITEMS.map((item) => (
+              <NavLink key={item.href} href={item.href}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="flex items-center space-x-3">
+            <Button variant="ghost" asChild>
+              <NavLink href="/login" className="text-foreground hover:text-primary">
+                Login
+              </NavLink>
+            </Button>
+            <Button asChild>
+              <NavLink href="/register" className="text-primary-foreground hover:text-primary-foreground">
+                Register
+              </NavLink>
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile View */}
+        <MobileNav items={NAV_ITEMS} />
+
+      </div>
+    </header>
   );
 }
