@@ -86,9 +86,11 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm rounded-2xl">
+    <Card className="relative z-10 w-full max-w-sm rounded-2xl border-brand-accent/20 shadow-lg shadow-brand-accent/10">
       <CardHeader>
-        <CardTitle className="text-2xl">Create an account</CardTitle>
+        <CardTitle className="ai-gradient-text text-2xl font-semibold">
+          Create an account
+        </CardTitle>
         <CardDescription>Sign up to get started</CardDescription>
       </CardHeader>
 
@@ -118,6 +120,7 @@ export function RegisterForm() {
                     variant="outline"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
+                    className="border-brand-accent/40 text-brand-accent hover:bg-brand-accent/10 hover:text-brand-accent"
                   >
                     <Upload className="h-4 w-4" />
                     Upload photo
@@ -195,7 +198,7 @@ export function RegisterForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-brand-accent"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -209,7 +212,11 @@ export function RegisterForm() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-brand-accent text-white hover:bg-brand-accent/90"
+          >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Create account
           </Button>

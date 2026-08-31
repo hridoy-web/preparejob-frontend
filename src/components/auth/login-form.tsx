@@ -52,9 +52,11 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm rounded-2xl">
+    <Card className="relative z-10 w-full max-w-sm rounded-2xl border-brand-accent/20 shadow-lg shadow-brand-accent/10">
       <CardHeader>
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
+        <CardTitle className="ai-gradient-text text-2xl font-semibold">
+          Welcome back
+        </CardTitle>
         <CardDescription>Log in to your account</CardDescription>
       </CardHeader>
 
@@ -80,7 +82,7 @@ export function LoginForm() {
               <Label htmlFor="password">Password</Label>
               <Link
                 href="/forgot-password"
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-xs text-muted-foreground hover:text-brand-accent"
               >
                 Forgot password?
               </Link>
@@ -99,7 +101,7 @@ export function LoginForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-brand-accent"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -113,14 +115,18 @@ export function LoginForm() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-brand-accent text-white hover:bg-brand-accent/90"
+          >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Log in
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-foreground underline underline-offset-4">
+            <Link href="/register" className="text-brand-accent underline underline-offset-4">
               Sign up
             </Link>
           </p>
