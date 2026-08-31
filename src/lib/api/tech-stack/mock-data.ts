@@ -1,4 +1,4 @@
-import { TechStackItem } from "@/types/tech-stack";
+import type { TechStackItem } from "@/types/tech-stack";
 
 export const MOCK_TECH_STACKS: TechStackItem[] = [
   {
@@ -8,6 +8,7 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Frontend",
     questionCount: 28,
     badgeText: "High Failure Rate",
+    badgeTone: "warning",
     challengeQuestion: "How do Server Components handle caching in App Router?",
     iconName: "nextjs",
   },
@@ -18,7 +19,8 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Frontend",
     questionCount: 42,
     badgeText: "Top Recruiter Choice",
-    challengeQuestion: "When does useLayoutEffect run vs useEffect?",
+    badgeTone: "accent",
+    challengeQuestion: "When does useLayoutEffect run compared with useEffect?",
     iconName: "react",
   },
   {
@@ -28,7 +30,8 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Language",
     questionCount: 32,
     badgeText: "Must-Have 2026",
-    challengeQuestion: "Difference between infer and conditional generics?",
+    badgeTone: "info",
+    challengeQuestion: "Can you explain infer with conditional types?",
     iconName: "typescript",
   },
   {
@@ -38,7 +41,8 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Language",
     questionCount: 50,
     badgeText: "Core Technical Round",
-    challengeQuestion: "How does the Event Loop process Microtasks vs Macrotasks?",
+    badgeTone: "warning",
+    challengeQuestion: "How does the Event Loop process microtasks and macrotasks?",
     iconName: "javascript",
   },
   {
@@ -48,7 +52,8 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Backend",
     questionCount: 24,
     badgeText: "Backend Benchmark",
-    challengeQuestion: "How to avoid thread pool starvation under heavy load?",
+    badgeTone: "success",
+    challengeQuestion: "How can you prevent thread pool starvation at scale?",
     iconName: "nodejs",
   },
   {
@@ -58,6 +63,7 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Backend",
     questionCount: 18,
     badgeText: "API Architecture",
+    badgeTone: "accent",
     challengeQuestion: "How does async error propagation work in middleware?",
     iconName: "express",
   },
@@ -65,10 +71,11 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     id: "mongodb",
     name: "MongoDB",
     slug: "mongodb",
-    category: "Backend",
+    category: "Database",
     questionCount: 22,
     badgeText: "Database Depth",
-    challengeQuestion: "When should you use aggregation over simple indexes?",
+    badgeTone: "success",
+    challengeQuestion: "When should aggregation replace simple indexes?",
     iconName: "mongodb",
   },
   {
@@ -78,7 +85,8 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Styling",
     questionCount: 15,
     badgeText: "UI Speed Round",
-    challengeQuestion: "How does JIT engine optimize dynamic class safelisting?",
+    badgeTone: "info",
+    challengeQuestion: "How does Tailwind optimize generated utility classes?",
     iconName: "tailwind",
   },
   {
@@ -88,7 +96,8 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Styling",
     questionCount: 20,
     badgeText: "Layout Mastery",
-    challengeQuestion: "How does Stacking Context affect z-index rendering?",
+    badgeTone: "accent",
+    challengeQuestion: "How does stacking context affect z-index rendering?",
     iconName: "css3",
   },
   {
@@ -98,6 +107,7 @@ export const MOCK_TECH_STACKS: TechStackItem[] = [
     category: "Frontend",
     questionCount: 12,
     badgeText: "Web Vitals & Accessibility",
+    badgeTone: "info",
     challengeQuestion: "What is the difference between async and defer scripts?",
     iconName: "html5",
   },
