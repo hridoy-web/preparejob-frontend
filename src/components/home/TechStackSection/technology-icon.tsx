@@ -1,33 +1,39 @@
 import {
-  Braces,
-  Code2,
-  Database,
-  FileCode2,
-  Globe2,
-  Layers3,
-  Server,
-  Terminal,
-} from "lucide-react";
+  SiNextdotjs,
+  SiReact,
+  SiNodedotjs,
+  SiExpress,
+  SiMongodb,
+  SiJavascript,
+  SiTypescript,
+  SiTailwindcss,
+  SiCss,
+  SiHtml5,
+} from "react-icons/si";
+import { Code2 } from "lucide-react";
 
 interface TechnologyIconProps {
   name: string;
+  className?: string;
 }
 
 const iconMap = {
-  nextjs: Terminal,
-  react: Layers3,
-  nodejs: Server,
-  express: Layers3,
-  mongodb: Database,
-  javascript: Braces,
-  typescript: FileCode2,
-  tailwind: Code2,
-  css3: Code2,
-  html5: Globe2,
-};
+  nextjs: SiNextdotjs,
+  react: SiReact,
+  nodejs: SiNodedotjs,
+  express: SiExpress,
+  mongodb: SiMongodb,
+  javascript: SiJavascript,
+  typescript: SiTypescript,
+  tailwind: SiTailwindcss,
+  css3: SiCss,
+  html5: SiHtml5,
+} satisfies Record<string, React.ComponentType<{ className?: string }>>;
 
-export function TechnologyIcon({ name }: TechnologyIconProps) {
+export function TechnologyIcon({
+  name,
+  className = "size-7",
+}: TechnologyIconProps) {
   const Icon = iconMap[name as keyof typeof iconMap] ?? Code2;
-
-  return <Icon aria-hidden="true" className="size-6" strokeWidth={1.8} />;
+  return <Icon aria-hidden="true" className={className} />;
 }

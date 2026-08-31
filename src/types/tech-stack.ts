@@ -5,16 +5,15 @@ export type TechCategory =
   | "Language"
   | "Styling";
 
-export type BadgeTone = "warning" | "accent" | "success" | "info";
+export type Difficulty = "Easy" | "Medium" | "Hard";
 
 export interface TechStackItem {
   id: string;
   name: string;
   slug: string;
-  category: TechCategory;
+  category: string;
   questionCount: number;
-  badgeText: string;
-  badgeTone: BadgeTone;
+  difficulty: "Easy" | "Medium" | "Hard";
   challengeQuestion: string;
   iconName: string;
 }
