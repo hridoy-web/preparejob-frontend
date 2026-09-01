@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff, UserRound, Loader2, Upload, X } from "lucide-react";
 
-import { authClient } from "@/lib/auth-client"; // adjust to wherever your better-auth client lives
+import { authClient } from "@/lib/auth-client";
+import { uploadImage } from "@/lib/upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,17 +17,6 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-
-// Converts the picked file to a base64 string so it can be sent as
-// better-auth's `image` field (no separate file-upload endpoint needed).
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 export function RegisterForm() {
   const router = useRouter();
@@ -41,17 +31,39 @@ export function RegisterForm() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setError(null);
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError("Please select a valid image file (PNG, JPG, WebP).");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size should be less than 5MB.");
+      return;
+    }
+
+    // Revoke previous preview URL to prevent memory leaks
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview);
+    }
 
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
   }
 
   function handleRemoveAvatar() {
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview);
+    }
     setAvatarFile(null);
     setAvatarPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -63,13 +75,21 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      const image = avatarFile ? await fileToBase64(avatarFile) : undefined;
+      let imageUrl: string | undefined = undefined;
 
+      // 1. Upload image to Cloudinary if an avatar is selected
+      if (avatarFile) {
+        setLoadingMessage("Uploading profile picture...");
+        imageUrl = await uploadImage(avatarFile, "preparejob/avatars");
+      }
+
+      // 2. Create user with Better-Auth and pass Cloudinary image URL
+      setLoadingMessage("Creating your account...");
       const { error: signUpError } = await authClient.signUp.email({
         name: username,
         email,
         password,
-        image,
+        image: imageUrl,
       });
 
       if (signUpError) {
@@ -78,10 +98,15 @@ export function RegisterForm() {
       }
 
       router.push("/dashboard");
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
+      setLoadingMessage(null);
     }
   }
 
@@ -121,6 +146,7 @@ export function RegisterForm() {
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
                     className="border-brand-accent/40 text-brand-accent hover:bg-brand-accent/10 hover:text-brand-accent"
+                    disabled={isLoading}
                   >
                     <Upload className="h-4 w-4" />
                     Upload photo
@@ -132,13 +158,14 @@ export function RegisterForm() {
                       size="sm"
                       onClick={handleRemoveAvatar}
                       aria-label="Remove photo"
+                      disabled={isLoading}
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
                 <p className="truncate text-xs text-muted-foreground">
-                  {avatarFile ? avatarFile.name : "PNG or JPG, optional"}
+                  {avatarFile ? avatarFile.name : "PNG, JPG or WebP (max 5MB)"}
                 </p>
               </div>
             </div>
@@ -147,9 +174,10 @@ export function RegisterForm() {
               ref={fileInputRef}
               id="avatar"
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
               onChange={handleAvatarChange}
               className="hidden"
+              disabled={isLoading}
             />
           </div>
 
@@ -163,6 +191,7 @@ export function RegisterForm() {
               placeholder="janedoe"
               autoComplete="username"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -177,6 +206,7 @@ export function RegisterForm() {
               placeholder="jane@example.com"
               autoComplete="email"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -193,6 +223,7 @@ export function RegisterForm() {
                 autoComplete="new-password"
                 minLength={8}
                 required
+                disabled={isLoading}
                 className="pr-10"
               />
               <button
@@ -200,6 +231,7 @@ export function RegisterForm() {
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-brand-accent"
                 aria-label={showPassword ? "Hide password" : "Show password"}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -217,8 +249,14 @@ export function RegisterForm() {
             disabled={isLoading}
             className="w-full bg-brand-accent text-white hover:bg-brand-accent/90"
           >
-            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Create account
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {loadingMessage ?? "Please wait..."}
+              </>
+            ) : (
+              "Create account"
+            )}
           </Button>
         </form>
       </CardContent>
