@@ -5,7 +5,7 @@ interface ApiResponse<T = unknown> {
     data: T;
     message: string;
     success: boolean;
-}
+};
 
 export const createBlogApi = async (formdata: FormData): Promise<ApiResponse> => {
 
