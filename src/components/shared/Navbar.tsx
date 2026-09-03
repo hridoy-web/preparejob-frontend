@@ -1,8 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { User, LayoutDashboard, Compass } from "lucide-react";
-
-import { auth } from "@/lib/auth"; // adjust path to your server better-auth instance
+import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {

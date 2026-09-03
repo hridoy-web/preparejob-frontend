@@ -14,6 +14,7 @@ export default function NotFoundPage() {
                     Go Back Home <MoveRight className="transition-transform duration-200 group-hover:translate-x-1" />
                 </Link>
             </Button>
+
         </main>
     )
 }
