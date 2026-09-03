@@ -4,6 +4,9 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
+import ConditionalLayout from "@/components/shared/ConditionalLayout";
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -68,13 +71,20 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", lexendFont.variable, headingUrbanist.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full flex flex-col font-lexend bg-slate-50 text-slate-900">
-        <Navbar />
+        <TooltipProvider>
+          <ConditionalLayout>
+            <Navbar />
+          </ConditionalLayout>
 
-        <main className="grow">
-          {children}
-        </main>
+          <main className="grow">
+            {children}
+          </main>
 
-        <Footer />
+          <ConditionalLayout>
+            <Footer />
+          </ConditionalLayout>
+          <Toaster position="top-right" richColors />
+        </TooltipProvider>
       </body>
     </html>
   );

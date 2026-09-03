@@ -14,7 +14,7 @@ export default function TopicCard({ topic }: TopicCardProps) {
       <Link
         href={`/interview/${topic.slug}`}
         aria-label={`Explore ${topic.name} interview questions`}
-        className="group relative flex h-full min-h-[260px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-brand-surface p-6 shadow-sm outline-none transition-[border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-accent/70 hover:shadow-2xl hover:shadow-brand-accent/10 focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-800 dark:bg-slate-900/60 dark:hover:bg-slate-900"
+        className="group relative flex h-full min-h-[260px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-brand-surface p-6 shadow-sm outline-none transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1.5 hover:border-brand-accent/70 hover:shadow-2xl hover:shadow-brand-accent/10 focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-800 dark:bg-slate-900/60 dark:hover:bg-slate-900"
       >
         <span
           aria-hidden="true"
