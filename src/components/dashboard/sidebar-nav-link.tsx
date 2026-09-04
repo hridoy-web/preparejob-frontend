@@ -3,7 +3,17 @@
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, HelpCircle, FileText, Users, Home, LucideIcon } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  HelpCircle, 
+  FileText, 
+  Users, 
+  Home, 
+  Bookmark, 
+  Heart, 
+  MessageSquare, 
+  LucideIcon 
+} from "lucide-react";
 
 interface SidebarNavLinkProps {
   title: string;
@@ -12,10 +22,17 @@ interface SidebarNavLinkProps {
 }
 
 const iconMap: Record<string, LucideIcon> = {
+  // Admin Routes
   "/admin": LayoutDashboard,
   "/admin/questions": HelpCircle,
   "/admin/blogs": FileText,
   "/admin/users": Users,
+  
+  // User Routes
+  "/user": LayoutDashboard,
+  "/user/bookmarks": Bookmark,
+  "/user/liked-blogs": Heart,
+  "/user/comments": MessageSquare,
 };
 
 export function SidebarNavLink({ title, url, isHome }: SidebarNavLinkProps) {

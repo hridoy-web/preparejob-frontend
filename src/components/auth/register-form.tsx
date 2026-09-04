@@ -97,7 +97,7 @@ export function RegisterForm() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

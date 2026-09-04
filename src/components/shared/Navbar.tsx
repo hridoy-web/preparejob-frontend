@@ -30,9 +30,10 @@ export default async function Navbar() {
   });
 
   const user = session?.user;
+const dashboardLink = user?.role === "admin" ? "/admin" : "/user";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center px-4">
         
         {/* Desktop Layout */}
@@ -71,7 +72,7 @@ export default async function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="w-full cursor-pointer flex items-center gap-2">
+                    <Link href={dashboardLink} className="w-full cursor-pointer flex items-center gap-2">
                       <LayoutDashboard className="h-4 w-4" /> Dashboard
                     </Link>
                   </DropdownMenuItem>
