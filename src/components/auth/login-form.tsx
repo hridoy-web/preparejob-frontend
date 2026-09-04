@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
-import { authClient } from "@/lib/auth-client"; // adjust to wherever your better-auth client lives
+import { authClient } from "@/lib/auth-client"; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,7 +43,7 @@ export function LoginForm() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
