@@ -1,7 +1,7 @@
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8000/api/v1";
 
 // 1. Create Blog (Admin Dashboard)
-export const createBlog = async (formData: FormData) => {
+export const createBlogApi = async (formData: FormData) => {
   const res = await fetch(`${BASE_URL}/blogs`, {
     method: "POST",
     body: formData,
