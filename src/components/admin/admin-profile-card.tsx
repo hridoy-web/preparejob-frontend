@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { uploadImage } from "@/lib/upload";
 
-// Type to safely handle 'role'
 interface AdminUser {
   id: string;
   name: string;
@@ -27,17 +26,15 @@ export function AdminProfileCard() {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [prevUser, setPrevUser] = useState(user);
-
-  // Sync state with session during render phase
-  if (user !== prevUser) {
-    setPrevUser(user);
-    setName(user?.name || "");
-    setImageUrl(user?.image || "");
-  }
-
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Edit 
+  const handleStartEdit = () => {
+    setName(user?.name || "");
+    setImageUrl(user?.image || "");
+    setIsEditing(true);
+  };
 
   // Upload image to Cloudinary
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,24 +68,20 @@ export function AdminProfileCard() {
       setIsSaving(true);
       await authClient.updateUser({
         name,
-        image: imageUrl,
+        image: imageUrl || undefined,
       });
 
       toast.success("Admin profile updated successfully!");
       setIsEditing(false);
-
     } catch (error) {
       console.error("Profile update error:", error);
       toast.error("Failed to update profile");
-
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleCancel = () => {
-    setName(user?.name || "");
-    setImageUrl(user?.image || "");
     setIsEditing(false);
   };
 
@@ -99,6 +92,8 @@ export function AdminProfileCard() {
       </Card>
     );
   }
+
+  const activeAvatar = imageUrl || user?.image;
 
   return (
     <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl overflow-hidden font-lexend">
@@ -117,11 +112,7 @@ export function AdminProfileCard() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              setName(user?.name || "");
-              setImageUrl(user?.image || "");
-              setIsEditing(true);
-            }}
+            onClick={handleStartEdit}
             className="rounded-lg text-xs font-semibold h-8 px-3 border-slate-200 text-slate-700 hover:bg-white hover:text-indigo-600 shadow-2xs transition-all"
           >
             <Edit3 className="size-3.5 mr-1.5 text-indigo-600" />
@@ -147,7 +138,9 @@ export function AdminProfileCard() {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Avatar className="size-16 border-2 border-indigo-100 shadow-sm">
-                  <AvatarImage src={user?.image || ""} alt={user?.name || "Admin"} />
+                  {user?.image ? (
+                    <AvatarImage src={user.image} alt={user?.name || "Admin"} />
+                  ) : null}
                   <AvatarFallback className="bg-linear-to-br from-indigo-600 to-violet-700 text-white font-bold text-xl font-urbanist">
                     {user?.name ? user.name[0].toUpperCase() : "A"}
                   </AvatarFallback>
@@ -172,7 +165,6 @@ export function AdminProfileCard() {
               </div>
             </div>
 
-            {/* Premium Motivational Banner */}
             <div className="bg-linear-to-r from-indigo-50/80 via-purple-50/40 to-pink-50/50 border border-indigo-100/80 p-4 rounded-2xl flex items-start gap-3 max-w-md shadow-2xs">
               <div className="p-2 bg-indigo-600/10 rounded-xl shrink-0">
                 <Sparkles className="size-4 text-indigo-600" />
@@ -184,11 +176,12 @@ export function AdminProfileCard() {
           </div>
         ) : (
           <form onSubmit={handleSave} className="space-y-6 max-w-2xl">
-            {/* Avatar Edit Section */}
             <div className="flex items-center gap-5 pb-5 border-b border-slate-100">
               <div className="relative group">
                 <Avatar className="size-20 border-2 border-indigo-100 shadow-xs">
-                  <AvatarImage src={imageUrl || user?.image || ""} alt={name} />
+                  {activeAvatar ? (
+                    <AvatarImage src={activeAvatar} alt={name || "Admin"} />
+                  ) : null}
                   <AvatarFallback className="bg-linear-to-br from-indigo-600 to-violet-700 text-white font-bold text-2xl font-urbanist">
                     {name ? name[0].toUpperCase() : "A"}
                   </AvatarFallback>
@@ -224,7 +217,6 @@ export function AdminProfileCard() {
               </div>
             </div>
 
-            {/* Inputs */}
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="admin-name" className="text-xs font-semibold text-slate-700 font-lexend">
@@ -253,7 +245,6 @@ export function AdminProfileCard() {
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end gap-2 pt-2">
               <Button
                 type="button"
