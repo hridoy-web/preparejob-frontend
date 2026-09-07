@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,8 @@ import { toast } from "sonner";
 import { createBlogApi } from "@/lib/apiActions/blogsApi";
 
 export default function CreateBlogPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -56,6 +59,9 @@ export default function CreateBlogPage() {
       setFormData({ title: "", content: "", category: "", readTime: "5 min read" });
       setImageFile(null);
       setImagePreview(null);
+
+      router.push("/admin/blogs");
+      router.refresh();
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Something went wrong!";
