@@ -20,14 +20,18 @@ export default function NavLink({ href, children, className, onClick }: NavLinkP
       href={href}
       onClick={onClick}
       className={cn(
-        "px-3 py-1.5 rounded-md text-sm transition-all duration-200",
+        "relative py-1 text-sm font-medium transition-colors hover:text-primary",
         isActive
-          ? "ai-gradient-text font-bold bg-indigo-500/10 shadow-xs"
-          : "text-muted-foreground hover:text-primary",
+          ? "text-primary font-semibold"
+          : "text-muted-foreground",
         className
       )}
     >
       {children}
+      {/* Active Line Indicator */}
+      {isActive && (
+        <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-primary transition-all duration-300" />
+      )}
     </Link>
   );
 }
