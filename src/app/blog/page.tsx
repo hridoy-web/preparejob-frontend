@@ -2,12 +2,22 @@ import BlogHeader from "@/components/blog/BlogHeader";
 import { Metadata } from "next";
 import { getAllBlogs } from "@/lib/apiActions/blogsApi";
 import BlogCard, { BlogPost } from "@/components/blog/BlogCard";
+import BlogFilterBar from "@/components/blog/BlogFilterBar";
 
 
 export const metadata: Metadata = {
     title: "Career & Interview Mastery Blog | Prepare Job",
     description: "Master developer interviews with practical coding guides, interview strategies, technical insights, and career advice designed to help you land your next job.",
 };
+
+const CATEGORIES = [
+    "All",
+    "Frontend & UI",
+    "Backend & APIs",
+    "Databases",
+    "Behavioral",
+    "Interview Prep",
+];
 
 interface BlogPageProps {
     searchParams: Promise<{
@@ -20,18 +30,17 @@ interface BlogPageProps {
 export default async function BlogPage({ searchParams }: BlogPageProps) {
     const resolvedParams = await searchParams;
     const search = resolvedParams.search || "";
-    const category = resolvedParams.category || "";
+    const selectedCategory = resolvedParams.category || "";
     const page = Number(resolvedParams.page) || 1;
 
     let blogs: BlogPost[] = [];
-    let totalPages = 1;
 
     try {
         const response = await getAllBlogs({
             page,
             limit: 6,
             search,
-            category: category === "All" ? "" : category,
+            category: selectedCategory === "All" ? "" : selectedCategory,
             sort: "createdAt",
             order: "desc",
         });
@@ -45,7 +54,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         } else if (Array.isArray(response?.data?.blogs)) {
             blogs = response.data.blogs;
         }
-        totalPages = response.totalPages || Math.ceil((response.total || 1) / 6);
     } catch (error) {
         console.error("Error fetching blogs:", error);
     }
@@ -54,6 +62,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <main className="min-h-screen bg-[var(--color-brand-surface)] py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <BlogHeader />
+
+                <BlogFilterBar categories={CATEGORIES} />
 
                 <section className="mt-12" aria-label="Blog Articles List">
                     {blogs.length === 0 ? (
