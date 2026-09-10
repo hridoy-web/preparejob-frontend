@@ -1,6 +1,7 @@
 import BlogHeader from "@/components/blog/BlogHeader";
 import { Metadata } from "next";
 import { getAllBlogs } from "@/lib/apiActions/blogsApi";
+import BlogCard, { BlogPost } from "@/components/blog/BlogCard";
 
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const category = resolvedParams.category || "";
     const page = Number(resolvedParams.page) || 1;
 
+    let blogs: BlogPost[] = [];
     let totalPages = 1;
 
     try {
@@ -34,6 +36,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             order: "desc",
         });
 
+        if (Array.isArray(response?.data)) {
+            blogs = response;
+        } else if (Array.isArray(response?.data)) {
+            blogs = response.data;
+        } else if (Array.isArray(response?.data)) {
+            blogs = response.blogs;
+        } else if (Array.isArray(response?.data?.blogs)) {
+            blogs = response.data.blogs;
+        }
         totalPages = response.totalPages || Math.ceil((response.total || 1) / 6);
     } catch (error) {
         console.error("Error fetching blogs:", error);
@@ -45,7 +56,19 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 <BlogHeader />
 
                 <section className="mt-12" aria-label="Blog Articles List">
-
+                    {blogs.length === 0 ? (
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center">
+                            <p className="text-sm font-semibold text-slate-500">
+                                No blog posts found. Please check back later or explore other categories.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {blogs.map((blog) => (
+                                <BlogCard key={blog._id} blog={blog} />
+                            ))}
+                        </div>
+                    )}
                 </section>
             </div>
         </main>
