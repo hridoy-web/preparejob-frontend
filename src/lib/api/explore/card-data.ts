@@ -12,6 +12,61 @@ export interface TechItem {
 
 export const EXPLORE_TECH_ITEMS: TechItem[] = [
   {
+    "id": "javascript",
+    "name": "JavaScript",
+    "logo": "https://cdn.simpleicons.org/javascript",
+    "category": "Language",
+    "summary": "Core scripting language of the web, running in every browser and on servers via Node.js.",
+    "description": "JavaScript is a high-level, dynamically-typed language originally built for browsers. It now powers frontend, backend, mobile, and desktop apps through a huge ecosystem of frameworks and tools.",
+    "tags": ["High"],
+    "difficulty": "Beginner",
+    "popularity": 98
+  },
+  {
+    "id": "typescript",
+    "name": "TypeScript",
+    "logo": "https://cdn.simpleicons.org/typescript",
+    "category": "Language",
+    "summary": "A statically typed superset of JavaScript that compiles to plain JS.",
+    "description": "TypeScript adds optional static typing, interfaces, and modern tooling on top of JavaScript, catching errors at compile time and improving maintainability for large codebases.",
+    "tags": ["High"],
+    "difficulty": "Intermediate",
+    "popularity": 92
+  },
+  {
+    "id": "react",
+    "name": "React",
+    "logo": "https://cdn.simpleicons.org/react",
+    "category": "Frontend Framework",
+    "summary": "A component-based JavaScript library for building user interfaces.",
+    "description": "Maintained by Meta, React uses a virtual DOM and a declarative component model, and anchors a massive ecosystem of tools like Next.js and React Native.",
+    "tags": ["High"],
+    "difficulty": "Intermediate",
+    "popularity": 95
+  },
+  {
+    "id": "nextjs",
+    "name": "Next.js",
+    "logo": "https://cdn.simpleicons.org/nextdotjs",
+    "category": "Other",
+    "summary": "A React framework for production, with routing, SSR, and SSG built in.",
+    "description": "Next.js extends React with file-based routing, server-side rendering, static generation, API routes, and image optimization for full-stack apps.",
+    "tags": ["High"],
+    "difficulty": "Intermediate",
+    "popularity": 88
+  },
+  {
+    "id": "nodejs",
+    "name": "Node.js",
+    "logo": "https://cdn.simpleicons.org/nodedotjs",
+    "category": "Other",
+    "summary": "A JavaScript runtime built on Chrome's V8 engine for server-side apps.",
+    "description": "Node.js lets developers run JavaScript outside the browser using a non-blocking, event-driven model, ideal for APIs, real-time apps, and tooling.",
+    "tags": ["High"],
+    "difficulty": "Intermediate",
+    "popularity": 90
+  },
+  {
     "id": "mongodb",
     "name": "MongoDB",
     "logo": "https://cdn.simpleicons.org/mongodb",
@@ -34,48 +89,15 @@ export const EXPLORE_TECH_ITEMS: TechItem[] = [
     "popularity": 84
   },
   {
-    "id": "react",
-    "name": "React",
-    "logo": "https://cdn.simpleicons.org/react",
-    "category": "Frontend Framework",
-    "summary": "A component-based JavaScript library for building user interfaces.",
-    "description": "Maintained by Meta, React uses a virtual DOM and a declarative component model, and anchors a massive ecosystem of tools like Next.js and React Native.",
-    "tags": ["High"],
-    "difficulty": "Intermediate",
-    "popularity": 95
-  },
-  {
-    "id": "nodejs",
-    "name": "Node.js",
-    "logo": "https://cdn.simpleicons.org/nodedotjs",
-    "category": "Other",
-    "summary": "A JavaScript runtime built on Chrome's V8 engine for server-side apps.",
-    "description": "Node.js lets developers run JavaScript outside the browser using a non-blocking, event-driven model, ideal for APIs, real-time apps, and tooling.",
-    "tags": ["High"],
-    "difficulty": "Intermediate",
-    "popularity": 90
-  },
-  {
-    "id": "javascript",
-    "name": "JavaScript",
-    "logo": "https://cdn.simpleicons.org/javascript",
-    "category": "Language",
-    "summary": "Core scripting language of the web, running in every browser and on servers via Node.js.",
-    "description": "JavaScript is a high-level, dynamically-typed language originally built for browsers. It now powers frontend, backend, mobile, and desktop apps through a huge ecosystem of frameworks and tools.",
-    "tags": ["High"],
+    "id": "tailwind-css",
+    "name": "Tailwind CSS",
+    "logo": "https://cdn.simpleicons.org/tailwindcss",
+    "category": "CSS Framework",
+    "summary": "A utility-first CSS framework for rapidly building custom user interfaces.",
+    "description": "Tailwind provides low-level utility classes that let developers build custom designs directly in markup without writing traditional CSS.",
+    "tags": ["Low"],
     "difficulty": "Beginner",
-    "popularity": 98
-  },
-  {
-    "id": "typescript",
-    "name": "TypeScript",
-    "logo": "https://cdn.simpleicons.org/typescript",
-    "category": "Language",
-    "summary": "A statically typed superset of JavaScript that compiles to plain JS.",
-    "description": "TypeScript adds optional static typing, interfaces, and modern tooling on top of JavaScript, catching errors at compile time and improving maintainability for large codebases.",
-    "tags": ["High"],
-    "difficulty": "Intermediate",
-    "popularity": 92
+    "popularity": 86
   },
   {
     "id": "python",
@@ -164,17 +186,6 @@ export const EXPLORE_TECH_ITEMS: TechItem[] = [
     "tags": ["Low"],
     "difficulty": "Beginner",
     "popularity": 68
-  },
-  {
-    "id": "nextjs",
-    "name": "Next.js",
-    "logo": "https://cdn.simpleicons.org/nextdotjs",
-    "category": "Other",
-    "summary": "A React framework for production, with routing, SSR, and SSG built in.",
-    "description": "Next.js extends React with file-based routing, server-side rendering, static generation, API routes, and image optimization for full-stack apps.",
-    "tags": ["High"],
-    "difficulty": "Intermediate",
-    "popularity": 88
   },
   {
     "id": "django",
@@ -352,17 +363,7 @@ export const EXPLORE_TECH_ITEMS: TechItem[] = [
     "difficulty": "Advanced",
     "popularity": 89
   },
-  {
-    "id": "tailwind-css",
-    "name": "Tailwind CSS",
-    "logo": "https://cdn.simpleicons.org/tailwindcss",
-    "category": "CSS Framework",
-    "summary": "A utility-first CSS framework for rapidly building custom user interfaces.",
-    "description": "Tailwind provides low-level utility classes that let developers build custom designs directly in markup without writing traditional CSS.",
-    "tags": ["Low"],
-    "difficulty": "Beginner",
-    "popularity": 86
-  },
+
   {
     "id": "grpc",
     "name": "gRPC",
