@@ -1,8 +1,10 @@
 import BlogHeader from "@/components/blog/BlogHeader";
 import { Metadata } from "next";
 import { getAllBlogs } from "@/lib/apiActions/blogsApi";
-import BlogCard, { BlogPost } from "@/components/blog/BlogCard";
 import BlogFilterBar from "@/components/blog/BlogFilterBar";
+import { BlogPost } from "@/types/blog";
+import BlogCard from "@/components/blog/BlogCard";
+import BlogPagination from "@/components/blog/BlogPagination";
 
 
 export const metadata: Metadata = {
@@ -19,6 +21,8 @@ const CATEGORIES = [
     "Interview Prep",
 ];
 
+const LIMIT = 6;
+
 interface BlogPageProps {
     searchParams: Promise<{
         search?: string;
@@ -34,6 +38,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const page = Number(resolvedParams.page) || 1;
 
     let blogs: BlogPost[] = [];
+    let totalPages = 0;
 
     try {
         const response = await getAllBlogs({
@@ -73,11 +78,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {blogs.map((blog) => (
-                                <BlogCard key={blog._id} blog={blog} />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                {blogs.map((blog) => (
+                                    <BlogCard key={blog._id} blog={blog} />
+                                ))}
+                            </div>
+
+                            <BlogPagination currentPage={page} totalPages={totalPages} />
+                        </>
                     )}
                 </section>
             </div>
