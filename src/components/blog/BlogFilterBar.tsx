@@ -1,71 +1,71 @@
 "use client";
-import { Search } from "lucide-react";
-import { Button } from "../ui/button";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Loader2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 
-interface BlogFilterBarProps {
-    categories: string[];
-}
+export default function BlogFilterBar({
+  categories,
+}: {
+  categories: readonly string[];
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-export default function BlogFilterBar({ categories }: BlogFilterBarProps) {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
+  const currentCategory = searchParams.get("category") || "All";
+  const currentSearch = searchParams.get("search") || "";
+  const [searchTerm, setSearchTerm] = useState(currentSearch);
 
-    const currentCategory = searchParams.get("category") || "All";
-    const currentSearch = searchParams.get("search") || "";
+  const updateFilters = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    value && value !== "All" ? params.set(key, value) : params.delete(key);
+    params.delete("page");
+    startTransition(() => router.push(`${pathname}?${params.toString()}`));
+  };
 
-    const updateFilters = (key: string, value: string) => {
-        const params = new URLSearchParams(searchParams.toString());
+  useEffect(() => {
+    if (searchTerm === currentSearch) return;
+    const timer = setTimeout(() => updateFilters("search", searchTerm), 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-        if (value && value !== "All") {
-            params.set(key, value);
-        } else {
-            params.delete(key);
-        }
+  return (
+    <section className="mt-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+      {/* Category Pills */}
+      <nav className="flex flex-wrap gap-2.5">
+        {categories.map((cat) => (
+          <Button
+            key={cat}
+            onClick={() => updateFilters("category", cat)}
+            className={`h-10 rounded-full px-4 text-sm font-semibold transition-all ${
+              currentCategory === cat
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20 hover:bg-indigo-700"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100"
+            }`}
+          >
+            {cat}
+          </Button>
+        ))}
+      </nav>
 
-        params.delete("page");
-
-        router.push(`${pathname}?${params.toString()}`);
-    };
-
-    return (
-        <section className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" aria-label="Blog Controls">
-            <nav className="flex flex-wrap items-center gap-2" aria-label="Blog Categories">
-                {categories.map((cat) => {
-                    const isActive = currentCategory === cat;
-                    return (
-                        <Button
-                            key={cat}
-                            variant={isActive ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => updateFilters("category", cat)}
-                            className={
-                                isActive
-                                    ? "bg-[var(--color-brand-accent)] text-white hover:bg-[var(--color-brand-accent)]/90 shadow-md shadow-indigo-500/20"
-                                    : "bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200"
-                            }
-                        >
-                            {cat}
-                        </Button>
-                    );
-                })}
-            </nav>
-
-            <div className="relative w-full sm:w-72">
-                <Search
-                    className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400"
-                    aria-hidden="true"
-                />
-
-                <input
-                    type="search"
-                    defaultValue={currentSearch}
-                    onChange={(e) => updateFilters("search", e.target.value)}
-                    placeholder="Search blog posts..."
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-xs font-medium text-slate-900 outline-none transition-all focus:border-[var(--color-brand-accent)] focus:ring-2 focus:ring-indigo-500/20"
-                />
-            </div>
-        </section>
-    );
+      {/* Search Input Box */}
+      <div className="relative w-full sm:w-80">
+        <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+        <Input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search articles, topics, skills..."
+          className="h-11 w-full rounded-2xl border-slate-200 bg-white pl-11 pr-10 text-sm font-medium focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+        />
+        {isPending && (
+          <Loader2 className="absolute right-3.5 top-1/2 size-4 -translate-y-1/2 animate-spin text-indigo-600" />
+        )}
+      </div>
+    </section>
+  );
 }

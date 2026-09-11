@@ -1,56 +1,98 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Button } from "../ui/button";
-import { ChevronLeft } from "lucide-react";
 
-interface BlogPaginationProps {
-    currentPage: number;
-    totalPages: number;
-}
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { usePathname, useSearchParams } from "next/navigation";
 
-export default function BlogPagination({ currentPage, totalPages }: BlogPaginationProps) {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
+export default function BlogPagination({
+  currentPage,
+  totalPages,
+}: {
+  currentPage: number;
+  totalPages: number;
+}) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-    if(totalPages <= 1) return null;
+  if (totalPages <= 1) return null;
 
-    const handlePageChange = (newPage: number) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("page", newPage.toString());
-        router.push(`${pathname}?${params.toString()}`);
-    };
+  const createPageURL = (page: number | string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+    return `${pathname}?${params.toString()}`;
+  };
 
-    return(
-        <nav aria-label="Blog Pagination" className="mt-12 flex items-center justify-center gap-2">
-            <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage <= 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                className="gap-1 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-            >
-                <ChevronLeft className="size-4" />
-                Previous
-            </Button>
+  const isFirst = currentPage <= 1;
+  const isLast = currentPage >= totalPages;
 
-            <span className="px-3 text-xs font-medium text-slate-600">
-                Page <span className="font-bold text-slate-900">
-                    {currentPage} of{" "}
-                    <span className="font-bold text-slate-900">{totalPages}</span>
-                </span>
-            </span>
+  const getPages = () => {
+    if (totalPages <= 5)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages: (number | string)[] = [1];
+    if (currentPage > 3) pages.push("ellipsis-start");
 
-            <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage >= totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="gap-1 border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-            >
-                Next
-                <ChevronLeft className="size-4 " />
-            </Button>
-        </nav>
-    );
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+
+    if (currentPage < totalPages - 2) pages.push("ellipsis-end");
+    pages.push(totalPages);
+    return pages;
+  };
+
+  const disabledBtnStyle = "pointer-events-none opacity-40 select-none";
+
+  return (
+    <Pagination className="mt-12">
+      <PaginationContent>
+        {/* Previous */}
+        <PaginationItem>
+          <PaginationPrevious
+            href={isFirst ? "#" : createPageURL(currentPage - 1)}
+            tabIndex={isFirst ? -1 : undefined}
+            className={isFirst ? disabledBtnStyle : "hover:bg-slate-100"}
+          />
+        </PaginationItem>
+
+        {/* Numbers & Ellipsis */}
+        {getPages().map((page, idx) => (
+          <PaginationItem
+            key={typeof page === "string" ? `${page}-${idx}` : page}
+          >
+            {typeof page === "string" ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink
+                href={createPageURL(page)}
+                isActive={page === currentPage}
+                className={
+                  page === currentPage
+                    ? "!bg-slate-900 !text-white hover:!bg-slate-800"
+                    : "hover:bg-slate-100"
+                }
+              >
+                {page}
+              </PaginationLink>
+            )}
+          </PaginationItem>
+        ))}
+
+        {/* Next */}
+        <PaginationItem>
+          <PaginationNext
+            href={isLast ? "#" : createPageURL(currentPage + 1)}
+            tabIndex={isLast ? -1 : undefined}
+            className={isLast ? disabledBtnStyle : "hover:bg-slate-100"}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
 }
