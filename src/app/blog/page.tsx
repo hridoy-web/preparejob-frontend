@@ -1,4 +1,6 @@
 import BlogCard from "@/components/blog/BlogCard";
+import BlogEmptyState from "@/components/blog/BlogEmptyState";
+import BlogErrorState from "@/components/blog/BlogErrorState";
 import BlogFilterBar from "@/components/blog/BlogFilterBar";
 import BlogHeader from "@/components/blog/BlogHeader";
 import BlogPagination from "@/components/blog/BlogPagination";
@@ -35,6 +37,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   let blogs: BlogPost[] = [];
   let totalPages = 0;
+  let hasError = false;
 
   try {
     const response = await getAllBlogs({
@@ -54,6 +57,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       (totalItems ? Math.ceil(totalItems / LIMIT) : 0);
   } catch (error) {
     console.error("Error fetching blogs:", error);
+    hasError = true;
     blogs = [];
   }
 
@@ -70,13 +74,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </Suspense>
 
         <section className="mt-12" aria-label="Blog Articles List">
-          {blogs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center">
-              <p className="text-sm font-semibold text-slate-500">
-                No blog posts found. Please check back later or explore other
-                categories.
-              </p>
-            </div>
+          {hasError ? (
+            <BlogErrorState />
+          ) : blogs.length === 0 ? (
+            <BlogEmptyState category={category} search={search} />
           ) : (
             <>
               {featuredBlog && (
