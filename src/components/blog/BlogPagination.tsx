@@ -95,4 +95,4 @@ export default function BlogPagination({
       </PaginationContent>
     </Pagination>
   );
-}
+}                                                                 
