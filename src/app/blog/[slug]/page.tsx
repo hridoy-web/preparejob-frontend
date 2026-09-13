@@ -9,9 +9,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import CommentSection from "./_components/CommentSection";
-import BlogBottomActions from "./_components/BlogBottomActions";
-import SmartContentRenderer from "./_components/SmartContentRenderer";
+import CommentSection from "../../../components/single-blog/CommentSection";
+import BlogBottomActions from "../../../components/single-blog/BlogBottomActions";
+import SmartContentRenderer from "../../../components/single-blog/SmartContentRenderer";
 
 interface SingleBlogPageProps {
   params: Promise<{ slug: string }>;
