@@ -6,14 +6,14 @@ export const getAllQuestions = async (params?: {
   limit?: number; 
   technology?: string; 
   difficulty?: string;
-  search?: string; // <-- search type added
+  search?: string; 
 }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append("page", params.page.toString());
     if (params?.limit) query.append("limit", params.limit.toString());
     if (params?.technology) query.append("technology", params.technology);
     if (params?.difficulty) query.append("difficulty", params.difficulty);
-    if (params?.search) query.append("search", params.search); // <-- search query added
+    if (params?.search) query.append("search", params.search); 
 
     const res = await fetch(`${BASE_URL}/questions?${query.toString()}`, {
         cache: "no-store",
