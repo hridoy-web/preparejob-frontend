@@ -2,7 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client"; // adjust path to your better-auth client instance
+import { authClient } from "@/lib/auth-client"; 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export default function LogoutMenuItem() {

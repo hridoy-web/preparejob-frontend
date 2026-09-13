@@ -33,26 +33,31 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const { error: signInError } = await authClient.signIn.email({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        setError(signInError.message ?? "Invalid email or password.");
-        return;
-      }
-
-      router.push("/");
+      await authClient.signIn.email(
+        {
+          email,
+          password,
+        },
+        {
+          onSuccess: () => {
+          
+            router.push("/");
+            router.refresh();
+          },
+          onError: (ctx) => {
+            setError(ctx.error.message ?? "Invalid email or password.");
+            setIsLoading(false);
+          },
+        }
+      );
     } catch {
       setError("Something went wrong. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <Card className="relative z-10 w-full max-w-sm rounded-2xl border-brand-accent/20 shadow-lg shadow-brand-accent/10">
+    <Card className="relative z-10 w-full max-w-sm rounded-2xl border-brand-accent/20 shadow-lg shadow-brand-accent/10 font-lexend">
       <CardHeader>
         <CardTitle className="ai-gradient-text text-2xl font-semibold">
           Welcome back
@@ -120,7 +125,7 @@ export function LoginForm() {
             disabled={isLoading}
             className="w-full bg-brand-accent text-white hover:bg-brand-accent/90"
           >
-            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             Log in
           </Button>
 

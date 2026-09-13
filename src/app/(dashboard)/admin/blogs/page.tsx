@@ -183,7 +183,7 @@ export default function AdminBlogsPage() {
 
                   <div className="flex items-center gap-2 self-end sm:self-center">
                     <Button asChild size="sm" variant="outline" className="rounded-lg text-slate-600">
-                      <Link href={`/blogs/${blogSlug}`} target="_blank">
+                      <Link href={`/blog/${blogSlug}`} target="_blank">
                         <Eye className="size-3.5 mr-1" /> View
                       </Link>
                     </Button>
