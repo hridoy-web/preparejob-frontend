@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -17,6 +17,7 @@ import { authClient } from "@/lib/auth-client";
 
 export function DashboardHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const isAdmin = pathname.startsWith("/admin");
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -29,6 +30,18 @@ export function DashboardHeader() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  // Sign out handler with redirect
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+          router.refresh();
+        },
+      },
+    });
   };
 
   return (
@@ -74,7 +87,9 @@ export function DashboardHeader() {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2.5 p-1 rounded-full hover:bg-slate-100 transition-colors focus:outline-none">
               <Avatar className="size-8 border border-slate-200 shadow-xs">
-                <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
+                {user?.image ? (
+                  <AvatarImage src={user.image} alt={user?.name || "User"} />
+                ) : null}
                 <AvatarFallback className="bg-indigo-600 text-white font-medium text-xs">
                   {getInitials(user?.name)}
                 </AvatarFallback>
@@ -110,7 +125,7 @@ export function DashboardHeader() {
 
             {/* Sign Out */}
             <DropdownMenuItem 
-              onClick={() => authClient.signOut()} 
+              onClick={handleSignOut} 
               className="cursor-pointer flex items-center gap-2 text-rose-600 hover:bg-rose-50 rounded-xl py-2"
             >
               <LogOut className="size-4" />
