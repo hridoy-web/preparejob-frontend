@@ -39,19 +39,16 @@ export function RegisterForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       setError("Please select a valid image file (PNG, JPG, WebP).");
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError("Image size should be less than 5MB.");
       return;
     }
 
-    // Revoke previous preview URL to prevent memory leaks
     if (avatarPreview) {
       URL.revokeObjectURL(avatarPreview);
     }
@@ -77,13 +74,11 @@ export function RegisterForm() {
     try {
       let imageUrl: string | undefined = undefined;
 
-      // 1. Upload image to Cloudinary if an avatar is selected
       if (avatarFile) {
         setLoadingMessage("Uploading profile picture...");
         imageUrl = await uploadImage(avatarFile, "preparejob/avatars");
       }
 
-      // 2. Create user with Better-Auth and pass Cloudinary image URL
       setLoadingMessage("Creating your account...");
       const { error: signUpError } = await authClient.signUp.email({
         name: username,
@@ -98,6 +93,7 @@ export function RegisterForm() {
       }
 
       router.push("/");
+      router.refresh();
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -111,7 +107,7 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="relative z-10 w-full max-w-sm rounded-2xl border-brand-accent/20 shadow-lg shadow-brand-accent/10">
+    <Card className="relative z-10 w-full max-w-sm rounded-2xl border-brand-accent/20 shadow-lg shadow-brand-accent/10 font-lexend">
       <CardHeader>
         <CardTitle className="ai-gradient-text text-2xl font-semibold">
           Create an account
@@ -251,7 +247,7 @@ export function RegisterForm() {
           >
             {isLoading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 {loadingMessage ?? "Please wait..."}
               </>
             ) : (
