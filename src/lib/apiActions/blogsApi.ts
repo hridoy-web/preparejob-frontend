@@ -37,7 +37,7 @@ export const getAllBlogs = async (params?: {
 
 // 3. Fetch Single Blog by Slug (User Single Blog Page)
 export const getBlogBySlug = async (slug: string) => {
-  const res = await fetch(`${BASE_URL}/blogs/${slug}`, {
+  const res = await fetch(`${BASE_URL}/blogs/slug/${slug}`, {
     cache: "no-store",
   });
   if (!res.ok) throw new Error("Blog not found");
@@ -47,7 +47,7 @@ export const getBlogBySlug = async (slug: string) => {
 // 4. Update Blog (Admin Edit Blog Form)
 export const updateBlog = async (id: string, formData: FormData) => {
   const res = await fetch(`${BASE_URL}/blogs/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     body: formData,
   });
   if (!res.ok) throw new Error("Failed to update blog");
@@ -69,6 +69,7 @@ export const toggleLikeBlog = async (id: string, userId: string) => {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId }),
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to toggle like");
   return res.json();
@@ -77,9 +78,14 @@ export const toggleLikeBlog = async (id: string, userId: string) => {
 // 7. Add Comment (User Website Comment Box)
 export const addComment = async (
   id: string,
-  commentData: { userId: string; text: string }
+  commentData: {
+    userId: string;
+    userName: string;
+    commentText: string;
+    userImage?: string;
+  }
 ) => {
-  const res = await fetch(`${BASE_URL}/blogs/${id}/comment`, {
+  const res = await fetch(`${BASE_URL}/blogs/${id}/comments`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(commentData),
@@ -89,9 +95,15 @@ export const addComment = async (
 };
 
 // 8. Delete Comment (User & Admin Dashboard)
-export const deleteComment = async (id: string, commentId: string) => {
-  const res = await fetch(`${BASE_URL}/blogs/${id}/comment/${commentId}`, {
+export const deleteComment = async (
+  id: string,
+  commentId: string,
+  userId: string
+) => {
+  const res = await fetch(`${BASE_URL}/blogs/${id}/comments/${commentId}`, {
     method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId }),
   });
   if (!res.ok) throw new Error("Failed to delete comment");
   return res.json();
