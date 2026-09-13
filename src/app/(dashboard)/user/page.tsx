@@ -1,6 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,18 +13,79 @@ import {
     BookOpen,
     UserCheck,
     Zap,
-    Target
+    Target,
+    Loader2
 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { getUserStats } from "@/lib/apiActions/userApi";
+import { toast } from "sonner";
 
-export default async function UserDashboardPage() {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+interface IUserStats {
+    bookmarksCount: number;
+    likedBlogsCount: number;
+    commentedBlogsCount: number;
+}
 
+let cachedStats: { userId: string; stats: IUserStats } | null = null;
+
+export default function UserDashboardPage() {
+    const { data: session } = authClient.useSession();
+    const userId = session?.user?.id;
     const userName = session?.user?.name || "Candidate";
 
+    const [stats, setStats] = useState<IUserStats>(() => {
+        if (cachedStats?.userId === userId && cachedStats?.stats) {
+            return cachedStats.stats;
+        }
+        return {
+            bookmarksCount: 0,
+            likedBlogsCount: 0,
+            commentedBlogsCount: 0,
+        };
+    });
+
+    const [loading, setLoading] = useState<boolean>(cachedStats?.userId !== userId);
+
+    useEffect(() => {
+        async function fetchStats(isBackground = false) {
+            if (!userId) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                if (!isBackground && !cachedStats) {
+                    setLoading(true);
+                }
+
+                const res = await getUserStats(userId);
+                const data = res?.data || res;
+                const newStats = {
+                    bookmarksCount: data?.bookmarksCount || 0,
+                    likedBlogsCount: data?.likedBlogsCount || 0,
+                    commentedBlogsCount: data?.commentedBlogsCount || 0,
+                };
+
+                setStats(newStats);
+                cachedStats = { userId, stats: newStats };
+            } catch (error: unknown) {
+                if (!isBackground) {
+                    toast.error(error instanceof Error ? error.message : "Failed to fetch user stats");
+                }
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        if (cachedStats?.userId === userId) {
+            fetchStats(true); 
+        } else {
+            fetchStats(false); 
+        }
+    }, [userId]);
+
     return (
-        <div className="font-lexend max-w-6xl mx-auto space-y-6 pb-12">
+        <div className="font-lexend max-w-6xl mx-auto space-y-6 pb-12 px-4 sm:px-6">
 
             {/*  Welcome Section */}
             <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-indigo-50/80 via-white to-slate-50 p-6 sm:p-8 border border-indigo-100/80 shadow-xs">
@@ -45,7 +107,7 @@ export default async function UserDashboardPage() {
                     </div>
 
                     <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-2.5">
-                        <Button asChild className="bg-brand-accent hover:bg-indigo-700 text-white rounded-lg h-11 px-5 text-xs font-semibold shadow-xs transition-all font-lexend">
+                        <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg h-11 px-5 text-xs font-semibold shadow-xs transition-all font-lexend">
                             <Link href="/user/bookmarks" className="flex items-center gap-2">
                                 <Target className="size-4" />
                                 <span>Continue Practice</span>
@@ -71,7 +133,13 @@ export default async function UserDashboardPage() {
                         <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg shrink-0">
                             <Bookmark className="size-5" />
                         </div>
-                        <h3 className="text-3xl font-extrabold text-slate-900 font-lexend tracking-tight">18</h3>
+                        {loading ? (
+                            <Loader2 className="size-6 animate-spin text-indigo-600" />
+                        ) : (
+                            <h3 className="text-3xl font-extrabold text-slate-900 font-lexend tracking-tight">
+                                {stats.bookmarksCount}
+                            </h3>
+                        )}
                     </div>
                     <p className="text-xs text-slate-500 font-medium font-lexend">Saved for revision</p>
                 </Card>
@@ -85,7 +153,13 @@ export default async function UserDashboardPage() {
                         <div className="p-2 bg-rose-50 text-rose-600 rounded-lg shrink-0">
                             <Heart className="size-5" />
                         </div>
-                        <h3 className="text-3xl font-extrabold text-slate-900 font-lexend tracking-tight">12</h3>
+                        {loading ? (
+                            <Loader2 className="size-6 animate-spin text-rose-600" />
+                        ) : (
+                            <h3 className="text-3xl font-extrabold text-slate-900 font-lexend tracking-tight">
+                                {stats.likedBlogsCount}
+                            </h3>
+                        )}
                     </div>
                     <p className="text-xs text-slate-500 font-medium font-lexend">Helpful interview guides</p>
                 </Card>
@@ -99,7 +173,13 @@ export default async function UserDashboardPage() {
                         <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg shrink-0">
                             <MessageSquare className="size-5" />
                         </div>
-                        <h3 className="text-3xl font-extrabold text-slate-900 font-lexend tracking-tight">5</h3>
+                        {loading ? (
+                            <Loader2 className="size-6 animate-spin text-indigo-600" />
+                        ) : (
+                            <h3 className="text-3xl font-extrabold text-slate-900 font-lexend tracking-tight">
+                                {stats.commentedBlogsCount}
+                            </h3>
+                        )}
                     </div>
                     <p className="text-xs text-slate-500 font-medium font-lexend">Active discussions</p>
                 </Card>
