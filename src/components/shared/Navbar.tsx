@@ -90,7 +90,7 @@ const dashboardLink = user?.role === "admin" ? "/admin" : "/user";
                 <Button variant="ghost" asChild>
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="rounded-lg">
                   <Link href="/register">Register</Link>
                 </Button>
               </>
