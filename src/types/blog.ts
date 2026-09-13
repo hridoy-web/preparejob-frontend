@@ -1,7 +1,9 @@
 export interface BlogComment {
   _id?: string;
   userId: string;
-  text: string;
+  userName: string;
+  commentText: string;
+  userImage?: string;
   createdAt?: string;
 }
 
@@ -15,6 +17,8 @@ export interface BlogPost {
   readTime?: string;
   likes?: string[];
   comments?: BlogComment[];
+  likesCount?: number;
+  commentsCount?: number;
   createdAt: string;
   updatedAt?: string;
   __v?: number;
