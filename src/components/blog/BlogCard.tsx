@@ -14,7 +14,9 @@ interface BlogCardProps {
 const stripHtml = (html?: string) => (html ? html.replace(/<[^>]*>/g, "").trim() : "");
 
 export default function BlogCard({ blog, isFeatured = false }: BlogCardProps) {
-  const { title, slug, category, readTime, createdAt, likes, comments } = blog;
+  const { title, slug, category, readTime, createdAt } = blog;
+  const likesCount = blog.likesCount ?? blog.likes?.length ?? 0;
+  const commentsCount = blog.commentsCount ?? blog.comments?.length ?? 0;
   const imageUrl = typeof blog.bannerImage === "string" ? blog.bannerImage : blog.bannerImage?.secure_url || blog.bannerImage?.url || "";
   const descriptionText = stripHtml(blog.content || (blog as any).description || (blog as any).excerpt || "");
 
@@ -38,8 +40,8 @@ export default function BlogCard({ blog, isFeatured = false }: BlogCardProps) {
   const MetaInfo = () => (
     <div className="flex items-center justify-between text-xs font-medium text-slate-400">
       <div className="flex items-center gap-3">
-        <span className="flex items-center gap-1 transition-colors hover:text-rose-500"><Heart className="size-3.5" /> {likes?.length || 0}</span>
-        <span className="flex items-center gap-1 transition-colors hover:text-indigo-600"><MessageSquare className="size-3.5" /> {comments?.length || 0}</span>
+        <span className="flex items-center gap-1 transition-colors hover:text-rose-500"><Heart className="size-3.5" /> {likesCount}</span>
+        <span className="flex items-center gap-1 transition-colors hover:text-indigo-600"><MessageSquare className="size-3.5" /> {commentsCount}</span>
       </div>
       <time dateTime={createdAt}>{new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</time>
     </div>

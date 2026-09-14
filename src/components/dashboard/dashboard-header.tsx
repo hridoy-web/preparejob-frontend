@@ -12,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sparkles, Bell, UserCheck, Home, LogOut, User } from "lucide-react";
-import { authClient } from "@/lib/auth-client"; 
+import { Sparkles, Bell, UserCheck, Home, LogOut, User, Compass, BookOpen } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export function DashboardHeader() {
   const pathname = usePathname();
@@ -45,7 +45,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className="h-16 border-b border-slate-200/80 bg-white/80 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-20">
+    <header className="h-16 border-b border-slate-200/80 bg-white/80 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-20 font-lexend">
       <div className="flex items-center gap-3">
         <SidebarTrigger className="text-slate-600 hover:bg-slate-100 rounded-lg p-1.5" />
         <div className="h-4 w-px bg-slate-200 hidden sm:block" />
@@ -104,12 +104,30 @@ export function DashboardHeader() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            
-            {/* Edit Profile Menu Item */}
+
+            {/* Edit Profile (Only for Regular Users) */}
+            {!isAdmin && (
+              <DropdownMenuItem asChild>
+                <Link href="/user/profile" className="cursor-pointer flex items-center gap-2 rounded-xl py-2">
+                  <User className="size-4 text-slate-500" />
+                  <span className="text-xs font-medium">Edit Profile</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+
+            {/* Explore Questions (For Everyone) */}
             <DropdownMenuItem asChild>
-              <Link href="/user/profile" className="cursor-pointer flex items-center gap-2 rounded-xl py-2">
-                <User className="size-4 text-slate-500" />
-                <span className="text-xs font-medium">Edit Profile</span>
+              <Link href="/explore" className="cursor-pointer flex items-center gap-2 rounded-xl py-2">
+                <Compass className="size-4 text-slate-500" />
+                <span className="text-xs font-medium">Explore Questions</span>
+              </Link>
+            </DropdownMenuItem>
+
+            {/* Blog Link (For Everyone) */}
+            <DropdownMenuItem asChild>
+              <Link href="/blog" className="cursor-pointer flex items-center gap-2 rounded-xl py-2">
+                <BookOpen className="size-4 text-slate-500" />
+                <span className="text-xs font-medium">Blogs</span>
               </Link>
             </DropdownMenuItem>
 
@@ -124,8 +142,8 @@ export function DashboardHeader() {
             <DropdownMenuSeparator />
 
             {/* Sign Out */}
-            <DropdownMenuItem 
-              onClick={handleSignOut} 
+            <DropdownMenuItem
+              onClick={handleSignOut}
               className="cursor-pointer flex items-center gap-2 text-rose-600 hover:bg-rose-50 rounded-xl py-2"
             >
               <LogOut className="size-4" />

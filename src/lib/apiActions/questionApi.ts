@@ -1,12 +1,19 @@
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8000/api/v1";
 
 // 1. Find all questions for Explore page and admin dashboard
-export const getAllQuestions = async (params?: { page?: number; limit?: number; technology?: string; difficulty?: string }) => {
+export const getAllQuestions = async (params?: { 
+  page?: number; 
+  limit?: number; 
+  technology?: string; 
+  difficulty?: string;
+  search?: string; 
+}) => {
     const query = new URLSearchParams();
     if (params?.page) query.append("page", params.page.toString());
     if (params?.limit) query.append("limit", params.limit.toString());
     if (params?.technology) query.append("technology", params.technology);
     if (params?.difficulty) query.append("difficulty", params.difficulty);
+    if (params?.search) query.append("search", params.search); 
 
     const res = await fetch(`${BASE_URL}/questions?${query.toString()}`, {
         cache: "no-store",
@@ -46,7 +53,7 @@ export const updateQuestion = async (id: string, data: Record<string, unknown>) 
     return res.json();
 };
 
-//5. Delete Questions for Admin Dashboard
+// 5. Delete Questions for Admin Dashboard
 export const deleteQuestion = async (id: string) => {
     const res = await fetch(`${BASE_URL}/questions/${id}`, {
         method: "DELETE",

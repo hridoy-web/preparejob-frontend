@@ -23,7 +23,8 @@ import {
   AlertTriangle,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getAllQuestions, deleteQuestion } from "@/lib/apiActions/questionApi";
@@ -34,6 +35,7 @@ interface IQuestion {
   technology: string;
   difficulty: string;
   importanceTag: string;
+  answer?: string;
   updatedAt?: string;
 }
 
@@ -44,62 +46,27 @@ interface IPagination {
   limit: number;
 }
 
-// Tech Specific badge
 const getTechBadgeStyle = (tech: string) => {
   const normalizedTech = tech?.toLowerCase() || "";
-
   switch (normalizedTech) {
-    case "javascript":
-    case "js":
-      return "bg-amber-100 text-amber-800 border-amber-300";
-    case "react":
-    case "reactjs":
-      return "bg-cyan-100 text-cyan-800 border-cyan-300";
-    case "nodejs":
-    case "node":
-      return "bg-emerald-100 text-emerald-800 border-emerald-300";
-    case "typescript":
-    case "ts":
-      return "bg-blue-100 text-blue-800 border-blue-300";
-    case "nextjs":
-    case "next":
-      return "bg-slate-900 text-white border-slate-700";
-    case "expressjs":
-    case "express":
-      return "bg-neutral-200 text-neutral-800 border-neutral-400";
-    case "mongodb":
-    case "mongo":
-      return "bg-green-100 text-green-800 border-green-300";
-    case "tailwind":
-    case "tailwindcss":
-      return "bg-sky-100 text-sky-800 border-sky-300";
-    case "css3":
-    case "css":
-      return "bg-indigo-100 text-indigo-800 border-indigo-300";
-    case "html5":
-    case "html":
-      return "bg-orange-100 text-orange-800 border-orange-300";
-    case "postgresql":
-    case "postgres":
-      return "bg-blue-100 text-blue-900 border-blue-300";
-    case "prisma":
-      return "bg-teal-100 text-teal-800 border-teal-300";
-    default:
-      return "bg-slate-100 text-slate-800 border-slate-200";
+    case "javascript": case "js": return "bg-amber-100 text-amber-800 border-amber-300";
+    case "react": case "reactjs": return "bg-cyan-100 text-cyan-800 border-cyan-300";
+    case "nodejs": case "node": return "bg-emerald-100 text-emerald-800 border-emerald-300";
+    case "typescript": case "ts": return "bg-blue-100 text-blue-800 border-blue-300";
+    case "nextjs": case "next": return "bg-slate-900 text-white border-slate-700";
+    case "expressjs": case "express": return "bg-neutral-200 text-neutral-800 border-neutral-400";
+    case "mongodb": case "mongo": return "bg-green-100 text-green-800 border-green-300";
+    case "tailwind": case "tailwindcss": return "bg-sky-100 text-sky-800 border-sky-300";
+    default: return "bg-slate-100 text-slate-800 border-slate-200";
   }
 };
 
-// Difficulty Badges
 const getDifficultyBadgeStyle = (difficulty: string) => {
   switch (difficulty) {
-    case "Easy":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200/80 before:bg-emerald-500";
-    case "Medium":
-      return "bg-amber-50 text-amber-700 border-amber-200/80 before:bg-amber-500";
-    case "Hard":
-      return "bg-rose-50 text-rose-700 border-rose-200/80 before:bg-rose-500";
-    default:
-      return "bg-slate-50 text-slate-700 border-slate-200 before:bg-slate-500";
+    case "Easy": return "bg-emerald-50 text-emerald-700 border-emerald-200/80 before:bg-emerald-500";
+    case "Medium": return "bg-amber-50 text-amber-700 border-amber-200/80 before:bg-amber-500";
+    case "Hard": return "bg-rose-50 text-rose-700 border-rose-200/80 before:bg-rose-500";
+    default: return "bg-slate-50 text-slate-700 border-slate-200 before:bg-slate-500";
   }
 };
 
@@ -110,10 +77,17 @@ export default function AdminQuestionsPage() {
 
   // Search & Filters State
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [selectedTech, setSelectedTech] = useState<string>("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("");
 
-  // Pagination State
+  // Modals State
+  const [viewQuestion, setViewQuestion] = useState<IQuestion | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<IQuestion | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+
+  // Separate Page State to prevent cascading render error
+  const [page, setPage] = useState<number>(1);
   const [pagination, setPagination] = useState<IPagination>({
     currentPage: 1,
     totalPages: 1,
@@ -121,103 +95,110 @@ export default function AdminQuestionsPage() {
     limit: 10,
   });
 
-  // Delete Dialog State
-  const [selectedQuestion, setSelectedQuestion] = useState<IQuestion | null>(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1);
+    }, 400);
 
-  const fetchQuestions = useCallback(async (page = 1, tech = "", diff = "") => {
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  const fetchQuestionsData = useCallback(async (currentPage: number, tech: string, diff: string, search: string) => {
     setLoading(true);
     try {
-      // query params to trigger Backend Filtering & Pagination
-      const res = await getAllQuestions({ page, limit: 10, technology: tech, difficulty: diff });
-
+      const res = await getAllQuestions({ page: currentPage, limit: 10, technology: tech, difficulty: diff, search });
       const rawData = res?.data?.questions || res?.data || res?.questions || res || [];
       const paginationData = res?.data?.pagination || res?.pagination;
 
       setQuestions(Array.isArray(rawData) ? rawData : []);
-      if (paginationData) {
-        setPagination(paginationData);
-      }
+      if (paginationData) setPagination(paginationData);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to fetch questions");
-      }
+      toast.error(error instanceof Error ? error.message : "Failed to fetch questions");
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Safe data loading effect without synchronous setState warnings
   useEffect(() => {
-    let isMounted = true;
+    let isSubscribed = true;
 
-    Promise.resolve().then(() => {
-      if (isMounted) {
-        fetchQuestions(pagination.currentPage, selectedTech, selectedDifficulty);
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const res = await getAllQuestions({
+          page,
+          limit: 10,
+          technology: selectedTech,
+          difficulty: selectedDifficulty,
+          search: debouncedSearch,
+        });
+
+        if (!isSubscribed) return;
+
+        const rawData = res?.data?.questions || res?.data || res?.questions || res || [];
+        const paginationData = res?.data?.pagination || res?.pagination;
+
+        setQuestions(Array.isArray(rawData) ? rawData : []);
+        if (paginationData) setPagination(paginationData);
+      } catch (error: unknown) {
+        if (isSubscribed) {
+          toast.error(error instanceof Error ? error.message : "Failed to fetch questions");
+        }
+      } finally {
+        if (isSubscribed) {
+          setLoading(false);
+        }
       }
-    });
+    };
+
+    loadData();
 
     return () => {
-      isMounted = false;
+      isSubscribed = false;
     };
-  }, [fetchQuestions, pagination.currentPage, selectedTech, selectedDifficulty]);
+  }, [page, selectedTech, selectedDifficulty, debouncedSearch]);
 
   const handleTechChange = (tech: string) => {
     setSelectedTech(tech);
-    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    setPage(1);
   };
 
   const handleDifficultyChange = (diff: string) => {
     setSelectedDifficulty(diff);
-    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    setPage(1);
   };
 
   const clearFilters = () => {
     setSelectedTech("");
     setSelectedDifficulty("");
     setSearchTerm("");
-    setPagination((prev) => ({ ...prev, currentPage: 1 }));
-  };
-
-  const openDeleteModal = (question: IQuestion) => {
-    setSelectedQuestion(question);
-    setIsDeleteDialogOpen(true);
+    setDebouncedSearch("");
+    setPage(1);
   };
 
   const handleDeleteConfirm = async () => {
     if (!selectedQuestion) return;
 
-    const id = selectedQuestion._id;
     try {
-      setDeletingId(id);
-      await deleteQuestion(id);
+      setDeletingId(selectedQuestion._id);
+      await deleteQuestion(selectedQuestion._id);
       toast.success("Question deleted successfully!");
-      fetchQuestions(pagination.currentPage, selectedTech, selectedDifficulty);
+      fetchQuestionsData(page, selectedTech, selectedDifficulty, debouncedSearch);
       setIsDeleteDialogOpen(false);
       setSelectedQuestion(null);
-      
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to delete question");
-      }
+      toast.error(error instanceof Error ? error.message : "Failed to delete question");
     } finally {
       setDeletingId(null);
     }
   };
 
-  // Client-side quick filter for title / tag search
-  const filteredQuestions = questions.filter(
-    (q) =>
-      q.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      q.importanceTag?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <div className="space-y-6 px-4 sm:px-6 pb-12 font-lexend">
-      {/* Header Bar */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
@@ -237,7 +218,7 @@ export default function AdminQuestionsPage() {
         </Button>
       </div>
 
-      {/* Search & Server-Side Filter Bar */}
+      {/* Filter & Search Bar */}
       <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl">
         <CardContent className="p-4 flex flex-col md:flex-row items-center gap-3">
           <div className="relative w-full md:flex-1">
@@ -251,7 +232,6 @@ export default function AdminQuestionsPage() {
           </div>
 
           <div className="flex items-center gap-2 w-full md:w-auto">
-            {/* Tech Select Filter */}
             <select
               value={selectedTech}
               onChange={(e) => handleTechChange(e.target.value)}
@@ -268,7 +248,6 @@ export default function AdminQuestionsPage() {
               <option value="tailwind">Tailwind</option>
             </select>
 
-            {/* Difficulty Select Filter */}
             <select
               value={selectedDifficulty}
               onChange={(e) => handleDifficultyChange(e.target.value)}
@@ -317,14 +296,14 @@ export default function AdminQuestionsPage() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredQuestions.length === 0 ? (
+              ) : questions.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-500 text-xs sm:text-sm">
                     No questions found.
                   </td>
                 </tr>
               ) : (
-                filteredQuestions.map((q) => (
+                questions.map((q) => (
                   <tr key={q._id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="px-4 sm:px-5 py-4 font-semibold text-slate-900 max-w-xs sm:max-w-md truncate">
                       {q.title}
@@ -335,9 +314,7 @@ export default function AdminQuestionsPage() {
                       </span>
                     </td>
                     <td className="px-3 sm:px-4 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 before:size-1.5 before:rounded-full ${getDifficultyBadgeStyle(q.difficulty)}`}
-                      >
+                      <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 before:size-1.5 before:rounded-full ${getDifficultyBadgeStyle(q.difficulty)}`}>
                         {q.difficulty}
                       </span>
                     </td>
@@ -349,20 +326,36 @@ export default function AdminQuestionsPage() {
                     </td>
                     <td className="px-4 sm:px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                        {/* View Button */}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setViewQuestion(q)}
+                          className="size-8 p-0 rounded-lg text-slate-600 hover:bg-slate-100"
+                        >
+                          <Eye className="size-4" />
+                        </Button>
+
+                        {/* Edit Button */}
                         <Button
                           asChild
                           size="sm"
                           variant="ghost"
-                          className="size-8 p-0 rounded-lg text-slate-600 hover:bg-slate-100"
+                          className="size-8 p-0 rounded-lg text-indigo-600 hover:bg-indigo-50"
                         >
                           <Link href={`/admin/questions/edit/${q._id}`}>
                             <Edit3 className="size-4" />
                           </Link>
                         </Button>
+
+                        {/* Delete Button */}
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => openDeleteModal(q)}
+                          onClick={() => {
+                            setSelectedQuestion(q);
+                            setIsDeleteDialogOpen(true);
+                          }}
                           className="size-8 p-0 rounded-lg text-rose-600 hover:bg-rose-50"
                         >
                           <Trash2 className="size-4" />
@@ -376,7 +369,7 @@ export default function AdminQuestionsPage() {
           </table>
         </div>
 
-        {/* Server-Side Pagination Controls */}
+        {/* Pagination */}
         {pagination.totalPages > 1 && (
           <div className="px-4 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <div>
@@ -387,8 +380,8 @@ export default function AdminQuestionsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={pagination.currentPage <= 1 || loading}
-                onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                disabled={page <= 1 || loading}
+                onClick={() => setPage((prev) => prev - 1)}
                 className="h-8 px-2.5 rounded-lg border-slate-200"
               >
                 <ChevronLeft className="size-4 mr-1" /> Previous
@@ -399,8 +392,8 @@ export default function AdminQuestionsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={pagination.currentPage >= pagination.totalPages || loading}
-                onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                disabled={page >= pagination.totalPages || loading}
+                onClick={() => setPage((prev) => prev + 1)}
                 className="h-8 px-2.5 rounded-lg border-slate-200"
               >
                 Next <ChevronRight className="size-4 ml-1" />
@@ -409,6 +402,53 @@ export default function AdminQuestionsPage() {
           </div>
         )}
       </Card>
+
+      {/* Question Details View Modal */}
+      <Dialog open={Boolean(viewQuestion)} onOpenChange={() => setViewQuestion(null)}>
+        <DialogContent className="sm:max-w-lg rounded-2xl p-6 bg-white border border-slate-200">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 pr-6">
+              {viewQuestion?.title}
+            </DialogTitle>
+          </DialogHeader>
+
+          {viewQuestion && (
+            <div className="space-y-4 my-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`inline-flex items-center font-bold px-2.5 py-1 rounded-md text-xs border uppercase ${getTechBadgeStyle(viewQuestion.technology)}`}>
+                  {viewQuestion.technology}
+                </span>
+                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border before:size-1.5 before:rounded-full ${getDifficultyBadgeStyle(viewQuestion.difficulty)}`}>
+                  {viewQuestion.difficulty}
+                </span>
+                <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 font-medium px-2.5 py-1 rounded-md text-xs">
+                  <Star className="size-3 text-amber-500" />
+                  {viewQuestion.importanceTag}
+                </span>
+              </div>
+
+              {viewQuestion.answer && (
+                <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Answer / Solution</span>
+                  <p className="text-xs sm:text-sm text-slate-700 whitespace-pre-line leading-relaxed">
+                    {viewQuestion.answer}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={() => setViewQuestion(null)}
+              className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm h-10 px-4"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

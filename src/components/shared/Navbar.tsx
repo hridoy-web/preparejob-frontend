@@ -19,7 +19,7 @@ import MobileNav from "./MobileNav";
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Explore", href: "/explore" },
-  { label: "Blog", href: "/blog" },
+  { label: "Blogs", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -30,7 +30,8 @@ export default async function Navbar() {
   });
 
   const user = session?.user;
-const dashboardLink = user?.role === "admin" ? "/admin" : "/user";
+  const isAdmin = user?.role === "admin";
+  const dashboardLink = isAdmin ? "/admin" : "/user";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -66,18 +67,23 @@ const dashboardLink = user?.role === "admin" ? "/admin" : "/user";
                     <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="w-full cursor-pointer flex items-center gap-2">
-                      <User className="h-4 w-4" /> My Profile
-                    </Link>
-                  </DropdownMenuItem>
+                  
+                  {/* Show My Profile only for regular users */}
+                  {!isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/user/profile" className="w-full cursor-pointer flex items-center gap-2">
+                        <User className="h-4 w-4" /> My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
                   <DropdownMenuItem asChild>
                     <Link href={dashboardLink} className="w-full cursor-pointer flex items-center gap-2">
                       <LayoutDashboard className="h-4 w-4" /> Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/explore-questions" className="w-full cursor-pointer flex items-center gap-2">
+                    <Link href="/explore" className="w-full cursor-pointer flex items-center gap-2">
                       <Compass className="h-4 w-4" /> Explore Questions
                     </Link>
                   </DropdownMenuItem>

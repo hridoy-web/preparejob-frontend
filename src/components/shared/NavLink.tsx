@@ -30,7 +30,7 @@ export default function NavLink({ href, children, className, onClick }: NavLinkP
       {children}
       {/* Active Line Indicator */}
       {isActive && (
-        <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-primary transition-all duration-300" />
+        <span className="absolute bottom-0 left-0 h-0.5 w-full rounded-full bg-primary transition-all duration-300" />
       )}
     </Link>
   );
