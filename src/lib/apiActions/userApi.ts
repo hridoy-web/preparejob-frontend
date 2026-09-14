@@ -12,9 +12,26 @@ export const toggleBookmark = async (questionId: string, userId?: string) => {
     body: JSON.stringify({ questionId, userId }),
   });
 
+  const data = await res.json().catch(() => ({}));
+
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to toggle bookmark");
+    throw new Error(data.message || "Failed to toggle bookmark");
+  }
+
+  return data;
+};
+
+// 2. Fetch all bookmarked questions for the logged-in user
+export const getBookmarkedQuestions = async () => {
+  const res = await fetch("/api/user/bookmark", {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to fetch bookmarks");
   }
 
   return res.json();
