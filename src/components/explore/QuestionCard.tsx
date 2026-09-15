@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Question } from "@/types/question";
 import { Badge } from "@/components/ui/badge";
@@ -24,71 +24,92 @@ import {
 interface QuestionCardProps {
   question: Question;
   index: number;
+  initialBookmarked?: boolean;
+  onBookmarkToggle?: (questionId: string, isBookmarked: boolean) => void;
 }
 
-export function QuestionCard({ question, index }: QuestionCardProps) {
+const DIFFICULTY_VARIANTS: Record<string, string> = {
+  Easy: "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800",
+  Medium: "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800",
+  Hard: "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800",
+};
+
+export function QuestionCard({
+  question,
+  index,
+  initialBookmarked = false,
+  onBookmarkToggle,
+}: QuestionCardProps) {
   const [isOpen, setIsOpen] = useState(index === 0);
   const [activeTab, setActiveTab] = useState<"easy" | "advanced">("easy");
   const [isCopied, setIsCopied] = useState(false);
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [isSavingBookmark, setIsSavingBookmark] = useState(false);
 
   const { data: session, isPending: isSessionLoading } = useSession();
+  const userId = session?.user?.id;
   const router = useRouter();
+  const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sync bookmark state when session loads
+  // Sync state when parent provides updated bookmark status
   useEffect(() => {
-    const bookmarks =
-      (session?.user as unknown as { bookmarks?: string[] })?.bookmarks || [];
-    setIsBookmarked(bookmarks.includes(question._id));
-  }, [session, question._id]);
+    setIsBookmarked(initialBookmarked);
+  }, [initialBookmarked]);
 
-  const difficultyVariant = {
-    Easy: "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800",
-    Medium: "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800",
-    Hard: "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800",
-  }[question.difficulty];
+  // Clean up any pending timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const difficultyVariant =
+    DIFFICULTY_VARIANTS[question.difficulty] ||
+    "bg-muted text-muted-foreground border-border";
 
   const currentAnswer =
     activeTab === "easy" ? question.easyAnswer : question.advancedAnswer;
 
   const keyPoints = (currentAnswer?.keyPoints || []).filter((kp) => kp.point);
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(question.title);
       setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 1500);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setIsCopied(false), 1500);
     } catch {
-      // Clipboard unavailable
+      // Clipboard access unavailable or denied
     }
-  };
+  }, [question.title]);
 
   const handleBookmarkToggle = async () => {
-    // 1. If not logged in, prompt user to log in
+    // 1. Prompt login if user is not authenticated
     if (!isSessionLoading && !session?.user) {
       toast.error("Please login to bookmark questions");
       router.push("/login");
       return;
     }
 
-    if (isSavingBookmark || isSessionLoading) return;
+    if (isSavingBookmark || isSessionLoading || !userId) return;
 
-    // 2. Optimistic Update
+    // 2. Optimistic UI update
     const previousState = isBookmarked;
     const nextState = !previousState;
     setIsBookmarked(nextState);
+    onBookmarkToggle?.(question._id, nextState);
     setIsSavingBookmark(true);
 
     try {
-      const res = await toggleBookmark(question._id);
-      toast.success(
-        nextState ? "Question bookmarked" : "Bookmark removed"
-      );
+      await toggleBookmark(question._id, userId);
+      toast.success(nextState ? "Question bookmarked" : "Bookmark removed");
     } catch (error: any) {
-      // Rollback on failure
+      // Rollback optimistic state on failure
       setIsBookmarked(previousState);
+      onBookmarkToggle?.(question._id, previousState);
       toast.error(error?.message || "Failed to update bookmark");
     } finally {
       setIsSavingBookmark(false);
@@ -100,7 +121,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
       {/* Header Section */}
       <div className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-3.5">
-          {/* Code Icon */}
+          {/* Icon */}
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600 dark:bg-cyan-950/50 dark:text-cyan-400">
             <Code2 className="h-4 w-4" />
           </div>
@@ -117,12 +138,14 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
               >
                 {question.difficulty}
               </Badge>
-              <Badge
-                variant="secondary"
-                className="bg-cyan-50 text-cyan-700 hover:bg-cyan-100 dark:bg-cyan-950/40 dark:text-cyan-300 text-[10px] font-semibold uppercase tracking-wider px-2 py-0 border border-cyan-200/50 dark:border-cyan-800/40"
-              >
-                {question.importanceTag}
-              </Badge>
+              {question.importanceTag && (
+                <Badge
+                  variant="secondary"
+                  className="bg-cyan-50 text-cyan-700 hover:bg-cyan-100 dark:bg-cyan-950/40 dark:text-cyan-300 text-[10px] font-semibold uppercase tracking-wider px-2 py-0 border border-cyan-200/50 dark:border-cyan-800/40"
+                >
+                  {question.importanceTag}
+                </Badge>
+              )}
             </div>
 
             {/* Title */}
@@ -130,7 +153,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
               type="button"
               onClick={handleCopy}
               className="group/title flex items-start gap-2 text-left"
-              title="Copy question"
+              title="Copy question title"
             >
               <h3 className="text-lg font-bold leading-snug tracking-tight text-foreground">
                 {question.title}
@@ -166,7 +189,9 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Bookmark
-                className={`h-4 w-4 ${isBookmarked ? "fill-amber-500 text-amber-500" : ""}`}
+                className={`h-4 w-4 ${
+                  isBookmarked ? "fill-amber-500 text-amber-500" : ""
+                }`}
               />
             )}
           </Button>
@@ -212,6 +237,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
             {/* Answer Mode Pills */}
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => setActiveTab("easy")}
                 className={`rounded-lg px-4 py-2 text-xs font-bold transition-all ${
                   activeTab === "easy"
@@ -222,6 +248,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
                 Easy Answer
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab("advanced")}
                 className={`rounded-lg px-4 py-2 text-xs font-bold transition-all ${
                   activeTab === "advanced"

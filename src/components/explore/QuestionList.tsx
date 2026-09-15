@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { Question } from "@/types/question";
 import { QuestionCard } from "@/components/explore/QuestionCard";
 import { Button } from "@/components/ui/button";
@@ -9,13 +9,20 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 interface QuestionListProps {
   questions: Question[];
   itemsPerPage?: number;
+  bookmarkedSet?: Set<string>;
+  onBookmarkToggle?: (questionId: string, isBookmarked: boolean) => void;
 }
+
+const EMPTY_SET = new Set<string>();
 
 export function QuestionList({
   questions,
   itemsPerPage = 10,
+  bookmarkedSet = EMPTY_SET,
+  onBookmarkToggle,
 }: QuestionListProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const totalPages = Math.max(1, Math.ceil(questions.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -24,13 +31,9 @@ export function QuestionList({
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
-    // Keep the list in view when paging on long pages
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Build a compact page list with ellipses for long pagination runs
   const pageItems = useMemo(() => {
     if (totalPages <= 7) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -49,7 +52,7 @@ export function QuestionList({
   }, [totalPages, currentPage]);
 
   return (
-    <div className="space-y-8">
+    <div ref={containerRef} className="space-y-8 scroll-mt-6">
       {/* Question Cards */}
       <div className="space-y-5">
         {currentQuestions.map((question, index) => (
@@ -57,19 +60,19 @@ export function QuestionList({
             key={question._id || index}
             question={question}
             index={startIndex + index}
+            initialBookmarked={bookmarkedSet.has(question._id)}
+            onBookmarkToggle={onBookmarkToggle}
           />
         ))}
       </div>
 
-      {/* Pagination Controls Footer */}
+      {/* Pagination Controls */}
       {questions.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border/60">
-          {/* Info Text */}
           <p className="text-xs font-medium text-muted-foreground">
             Showing {startIndex + 1}-{endIndex} of {questions.length} questions
           </p>
 
-          {/* Page Controls */}
           {totalPages > 1 && (
             <div className="flex items-center gap-1.5">
               <Button
@@ -94,6 +97,7 @@ export function QuestionList({
                 ) : (
                   <button
                     key={item}
+                    type="button"
                     onClick={() => goToPage(item)}
                     className={`h-9 w-9 rounded-lg text-xs font-bold transition-colors ${
                       currentPage === item
