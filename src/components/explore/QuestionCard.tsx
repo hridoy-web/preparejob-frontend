@@ -137,9 +137,9 @@ export function QuestionCard({
         "",
         ...(keyPoints.length > 0
           ? [
-              "Key Points:",
-              ...keyPoints.map((kp) => `• ${kp.point}`),
-            ]
+            "Key Points:",
+            ...keyPoints.map((kp) => `• ${kp.point}`),
+          ]
           : []),
       ].join("\n");
 
@@ -311,10 +311,9 @@ export function QuestionCard({
             className={`
               h-9 w-9 rounded-lg border-border/80
               transition-all
-              ${
-                isBookmarked
-                  ? "border-amber-500/30 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              ${isBookmarked
+                ? "border-amber-500/30 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }
             `}
           >
@@ -322,9 +321,8 @@ export function QuestionCard({
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Bookmark
-                className={`h-4 w-4 ${
-                  isBookmarked ? "fill-amber-500" : ""
-                }`}
+                className={`h-4 w-4 ${isBookmarked ? "fill-amber-500" : ""
+                  }`}
               />
             )}
           </Button>
@@ -359,10 +357,9 @@ export function QuestionCard({
         className={`
           grid transition-[grid-template-rows,opacity]
           duration-300 ease-in-out
-          ${
-            isOpen
-              ? "grid-rows-[1fr] opacity-100"
-              : "grid-rows-[0fr] opacity-0"
+          ${isOpen
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0"
           }
         `}
       >
@@ -419,10 +416,9 @@ export function QuestionCard({
                   className={`
                     rounded-lg px-4 py-2.5
                     text-xs font-bold transition-all
-                    ${
-                      activeTab === "easy"
-                        ? "bg-background text-foreground shadow-sm ring-1 ring-border/60"
-                        : "text-muted-foreground hover:text-foreground"
+                    ${activeTab === "easy"
+                      ? "bg-background text-foreground shadow-sm ring-1 ring-border/60"
+                      : "text-muted-foreground hover:text-foreground"
                     }
                   `}
                 >
@@ -435,10 +431,9 @@ export function QuestionCard({
                   className={`
                     rounded-lg px-4 py-2.5
                     text-xs font-bold transition-all
-                    ${
-                      activeTab === "advanced"
-                        ? "bg-background text-foreground shadow-sm ring-1 ring-border/60"
-                        : "text-muted-foreground hover:text-foreground"
+                    ${activeTab === "advanced"
+                      ? "bg-background text-foreground shadow-sm ring-1 ring-border/60"
+                      : "text-muted-foreground hover:text-foreground"
                     }
                   `}
                 >
@@ -587,31 +582,26 @@ export function QuestionCard({
                         : "In-depth technical explanation"}
                     </div>
 
-                    {/* Highlighted answer */}
-<div className="my-3 rounded-lg border border-[#2d4055] bg-[#172334]">
-  <div className="border-l-2 border-cyan-400 px-4 py-3">
-    <div className="mb-2 flex items-center gap-2 font-mono text-[10px] text-cyan-400">
-      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-      ANSWER
-    </div>
+                    {/* Answer text */}
+                    <div className="my-3 rounded-lg border border-[#2d4055] bg-[#172334]">
+                      <div className="border-l-2 border-cyan-400 px-4 py-3">
+                        <div className="mb-2 flex items-center gap-2 font-mono text-[10px] text-cyan-400">
+                          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                          ANSWER
+                        </div>
 
-    <div className="font-mono text-[13px] leading-7 text-[#e6edf3] sm:text-sm">
-      {answerLines.map((line, i) => (
-        <div
-          key={i}
-          className="
-            min-h-7 whitespace-pre-wrap break-words
-            rounded-sm px-2
-            transition-colors
-            hover:bg-[#243447]
-          "
-        >
-          {line || "\u00A0"}
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
+                        <div className="font-mono text-[13px] leading-7 text-[#e6edf3] sm:text-sm">
+                          {answerLines.map((line, i) => (
+                            <div
+                              key={i}
+                              className=" min-h-7 whitespace-pre-wrap break-words rounded-sm px-2"
+                            >
+                              {line || "\u00A0"}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Return statement */}
                     <div>
