@@ -18,7 +18,7 @@ import MobileNav from "./MobileNav";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
-  { label: "Explore", href: "/explore" },
+  { label: "Resources", href: "/explore" },
   { label: "Blogs", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];

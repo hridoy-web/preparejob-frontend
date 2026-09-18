@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Question } from "@/types/question";
 import { QuestionList } from "@/components/explore/QuestionList";
+import { useSession } from "@/lib/auth-client";
+import { getUserBookmarks } from "@/lib/apiActions/userApi";
 
 interface QuestionsSectionProps {
   questions: Question[];
@@ -16,6 +18,57 @@ export function QuestionsSection({
   itemsPerPage = 10,
 }: QuestionsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<DifficultyFilter>("All");
+  const [bookmarkedSet, setBookmarkedSet] = useState<Set<string>>(new Set());
+
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
+  // 1. Fetch user bookmarks on mount or when auth state changes
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchUserBookmarks() {
+      if (!userId) {
+        if (isMounted) setBookmarkedSet(new Set());
+        return;
+      }
+
+      try {
+        const res = await getUserBookmarks(userId);
+        const data = res?.data || res?.bookmarks || res || [];
+        if (Array.isArray(data) && isMounted) {
+          const ids = data.map((item: any) =>
+            typeof item === "string" ? item : item._id
+          );
+          setBookmarkedSet(new Set(ids));
+        }
+      } catch (error) {
+        console.error("Failed to load user bookmarks:", error);
+      }
+    }
+
+    fetchUserBookmarks();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
+
+  // 2. Real-time local state update when a card toggles bookmark
+  const handleBookmarkToggle = useCallback(
+    (questionId: string, isBookmarked: boolean) => {
+      setBookmarkedSet((prev) => {
+        const next = new Set(prev);
+        if (isBookmarked) {
+          next.add(questionId);
+        } else {
+          next.delete(questionId);
+        }
+        return next;
+      });
+    },
+    []
+  );
 
   const counts = useMemo(() => {
     return {
@@ -73,12 +126,14 @@ export function QuestionsSection({
         })}
       </div>
 
-      {/* Paginated Question List — remounts (and resets pagination) when the filter changes */}
+      {/* Paginated Question List */}
       {filteredQuestions.length > 0 ? (
         <QuestionList
           key={activeFilter}
           questions={filteredQuestions}
           itemsPerPage={itemsPerPage}
+          bookmarkedSet={bookmarkedSet}
+          onBookmarkToggle={handleBookmarkToggle}
         />
       ) : (
         <div className="text-center py-20 border border-dashed border-border rounded-2xl bg-card">
