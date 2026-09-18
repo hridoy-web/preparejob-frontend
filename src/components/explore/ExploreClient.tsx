@@ -60,39 +60,72 @@ export function ExploreClient({ initialItems }: { initialItems: TechItem[] }) {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       {/* Hero Header */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-muted/50 via-background to-background py-14 md:py-20">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[280px] bg-[var(--color-brand-accent)]/10 blur-[130px] rounded-full pointer-events-none" />
-        <div className="absolute -top-10 right-[8%] h-40 w-40 rounded-full bg-cyan-400/10 blur-[90px] pointer-events-none hidden md:block" />
-        <div className="absolute -bottom-10 left-[8%] h-40 w-40 rounded-full bg-purple-400/10 blur-[90px] pointer-events-none hidden md:block" />
-
+      <section className="relative overflow-hidden border-b border-border bg-background py-16 md:py-24">
         <div className="container relative mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/90 px-4 py-1.5 text-xs font-semibold text-foreground backdrop-blur shadow-xs mb-5 animate-in fade-in-0 slide-in-from-top-2 duration-500">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--color-brand-accent)]" />
-            <span>Master Your Next Tech Interview</span>
+
+          {/* Eyebrow Badge */}
+          <div className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground shadow-sm animate-in fade-in-0 slide-in-from-top-2 duration-500">
+            <Sparkles className="h-3.5 w-3.5 text-foreground" />
+
+            <span>YOUR JOURNEY TO TECHNICAL MASTERY</span>
+
+            <span className="ml-1 h-1 w-1 rounded-full bg-foreground/40" />
           </div>
 
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl md:text-6xl animate-in fade-in-0 slide-in-from-top-3 duration-700">
-            Explore <span className="ai-gradient-text">Technologies</span>
+          {/* Main Heading */}
+          <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-[-0.04em] text-foreground sm:text-5xl md:text-6xl lg:text-7xl animate-in fade-in-0 slide-in-from-bottom-3 duration-700">
+
+            <span className="block">
+              Master the{" "}
+
+              <span className="relative inline-block">
+                Technologies
+
+                {/* Minimal Accent Underline */}
+                <span
+                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-foreground/80 sm:-bottom-2"
+                  aria-hidden="true"
+                />
+              </span>
+              .
+            </span>
+
+            <span className="mt-2 block text-muted-foreground md:mt-3">
+              Ace Your Next Interview.
+            </span>
+
           </h1>
 
-          <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base leading-relaxed animate-in fade-in-0 duration-700 delay-100">
-            Browse curated frameworks, languages, and core tools asked by top engineering teams.
+          {/* Subtitle */}
+          <p className="mx-auto mt-7 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base md:mt-8 md:leading-8 animate-in fade-in-0 duration-700 delay-100">
+            Explore the technologies that power the modern web.
+            Build your knowledge, sharpen your skills, and prepare
+            for the technical questions that matter most.
           </p>
 
-          <div className="mt-7 flex flex-wrap justify-center items-center gap-3 text-xs sm:text-sm font-medium text-muted-foreground animate-in fade-in-0 duration-700 delay-150">
-            <div className="flex items-center gap-2 rounded-lg bg-card/60 border border-border px-3 py-1.5 backdrop-blur-xs">
-              <Code2 className="h-4 w-4 text-[var(--color-brand-accent)]" />
+          {/* Statistics */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 text-xs font-medium text-muted-foreground sm:mt-10 sm:gap-3 animate-in fade-in-0 duration-700 delay-150">
+
+            {/* Core Topics */}
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+              <Code2 className="h-3.5 w-3.5 text-foreground" />
               <span>{initialItems.length} Core Topics</span>
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-card/60 border border-border px-3 py-1.5 backdrop-blur-xs">
-              <Cpu className="h-4 w-4 text-[var(--color-brand-accent)]" />
+
+            {/* Categories */}
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+              <Cpu className="h-3.5 w-3.5 text-foreground" />
               <span>{categories.length - 1} Categories</span>
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-card/60 border border-border px-3 py-1.5 backdrop-blur-xs">
-              <TrendingUp className="h-4 w-4 text-[var(--color-brand-accent)]" />
+
+            {/* Average Popularity */}
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+              <TrendingUp className="h-3.5 w-3.5 text-foreground" />
               <span>{avgPopularity}% Avg. Popularity</span>
             </div>
+
           </div>
+
         </div>
       </section>
 
@@ -104,7 +137,7 @@ export function ExploreClient({ initialItems }: { initialItems: TechItem[] }) {
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 <Layers className="h-4 w-4 text-[var(--color-brand-accent)]" />
-                <span>Technology Type</span>
+                <span>What do you want to prepare for?</span>
               </div>
               {hasActiveFilters && (
                 <button
@@ -126,20 +159,18 @@ export function ExploreClient({ initialItems }: { initialItems: TechItem[] }) {
                     key={cat}
                     type="button"
                     onClick={() => setSelectedCategory(cat)}
-                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-all border ${
-                      isActive
+                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-all border ${isActive
                         ? "bg-[var(--color-brand-accent)] text-white border-transparent shadow-xs scale-[1.03]"
                         : "bg-background border-border text-muted-foreground hover:border-foreground/20 hover:text-foreground"
-                    }`}
+                      }`}
                   >
                     <span>{cat}</span>
                     <Badge
                       variant="secondary"
-                      className={`text-[10px] px-1.5 py-0 h-4 min-w-[18px] justify-center rounded-full font-bold ${
-                        isActive
+                      className={`text-[10px] px-1.5 py-0 h-4 min-w-[18px] justify-center rounded-full font-bold ${isActive
                           ? "bg-white/20 text-white border-none"
                           : "bg-muted text-muted-foreground"
-                      }`}
+                        }`}
                     >
                       {count}
                     </Badge>
@@ -156,7 +187,7 @@ export function ExploreClient({ initialItems }: { initialItems: TechItem[] }) {
             <div className="flex items-center gap-3 overflow-x-auto">
               <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
                 <SlidersHorizontal className="h-4 w-4 text-[var(--color-brand-accent)]" />
-                <span>Difficulty:</span>
+                <span>What's your current level:</span>
               </span>
 
               <div className="flex items-center gap-1.5">
@@ -168,11 +199,10 @@ export function ExploreClient({ initialItems }: { initialItems: TechItem[] }) {
                       variant={isActive ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setSelectedDifficulty(level)}
-                      className={`rounded-lg text-xs font-semibold h-8 px-3 ${
-                        isActive
+                      className={`rounded-lg text-xs font-semibold h-8 px-3 ${isActive
                           ? "bg-primary text-primary-foreground shadow-xs"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      }`}
+                        }`}
                     >
                       {level}
                     </Button>
