@@ -7,14 +7,14 @@ export default function Footer() {
     <footer className="bg-slate-950 text-slate-300 font-lexend border-t border-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 lg:pt-16 pb-6">
 
-        {/* Main Footer Grid */}
+        {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
 
-          {/* Brand Info & Logo (Span 5) */}
+          {/* Brand Info & Logo */}
           <div className="md:col-span-5 space-y-4">
 
             <div className="flex items-center">
-              <Logo />
+             <Logo variant="dark" />
             </div>
 
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
@@ -27,7 +27,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links / Platform (Span 3) */}
+          {/* Quick Links / Platform */}
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white font-urbanist">
               Quick Links
@@ -56,7 +56,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Resources & Support (Span 4) */}
+          {/* Resources & Support  */}
           <div className="md:col-span-4 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white font-urbanist">
               Support & Legal
