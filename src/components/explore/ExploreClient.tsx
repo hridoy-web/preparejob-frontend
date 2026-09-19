@@ -1,143 +1,345 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { TechItem } from "@/lib/api/explore/card-data";
 import { TechCard } from "@/components/explore/TechCard";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Sparkles, Code2, Cpu, SlidersHorizontal, Layers } from "lucide-react";
+import {
+  Sparkles,
+  Code2,
+  Cpu,
+  Layers,
+  LayoutGrid,
+  Search,
+  TrendingUp,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 
-export function ExploreClient({ initialItems }: { initialItems: TechItem[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+export function ExploreClient({
+  initialItems,
+}: {
+  initialItems: TechItem[];
+}) {
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<string>("All");
 
-  // Dynamically extract unique categories
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>("All");
+
+  // Get all available categories
   const categories = useMemo(() => {
     const set = new Set(initialItems.map((item) => item.category));
+
     return ["All", ...Array.from(set)];
   }, [initialItems]);
 
-  const filteredItems = initialItems.filter((item) => {
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDifficulty =
-      selectedDifficulty === "All" || item.difficulty === selectedDifficulty;
-    const matchesCategory =
-      selectedCategory === "All" || item.category === selectedCategory;
+  // Calculate category counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      All: initialItems.length,
+    };
 
-    return matchesSearch && matchesDifficulty && matchesCategory;
-  });
+    initialItems.forEach((item) => {
+      counts[item.category] = (counts[item.category] || 0) + 1;
+    });
+
+    return counts;
+  }, [initialItems]);
+
+  // Calculate average popularity
+  const avgPopularity = useMemo(() => {
+    if (initialItems.length === 0) return 0;
+
+    const total = initialItems.reduce(
+      (sum, item) => sum + item.popularity,
+      0
+    );
+
+    return Math.round(total / initialItems.length);
+  }, [initialItems]);
+
+  // Filter technologies
+  const filteredItems = useMemo(() => {
+    return initialItems.filter((item) => {
+      const matchesDifficulty =
+        selectedDifficulty === "All" ||
+        item.difficulty === selectedDifficulty;
+
+      const matchesCategory =
+        selectedCategory === "All" ||
+        item.category === selectedCategory;
+
+      return matchesDifficulty && matchesCategory;
+    });
+  }, [initialItems, selectedDifficulty, selectedCategory]);
+
+  // Check for active filters
+  const hasActiveFilters =
+    selectedDifficulty !== "All" || selectedCategory !== "All";
+
+  // Reset all filters
+  const resetFilters = () => {
+    setSelectedDifficulty("All");
+    setSelectedCategory("All");
+  };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-16">
-      {/* Hero Header */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-muted/40 via-background to-background py-16 md:py-24">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-[var(--color-brand-accent)]/10 blur-[120px] rounded-full pointer-events-none" />
-
+    <div className="min-h-screen bg-background pb-20 text-foreground">
+      {/* =====================================================
+          HERO SECTION
+      ===================================================== */}
+      <section className="relative overflow-hidden border-b border-border bg-background py-16 md:py-24">
         <div className="container relative mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-semibold text-foreground backdrop-blur shadow-sm mb-6">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--color-brand-accent)]" />
-            <span>Master Your Next Interview</span>
+          {/* Eyebrow */}
+          <div className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground shadow-sm">
+            <Sparkles className="h-3.5 w-3.5 text-foreground" />
+
+            <span>YOUR JOURNEY TO TECHNICAL MASTERY</span>
+
+            <span className="ml-1 h-1 w-1 rounded-full bg-foreground/40" />
           </div>
 
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-            Explore <span className="ai-gradient-text">Technologies</span>
+          {/* Main Heading */}
+          <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-[-0.04em] text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
+            <span className="block">
+              Master{" "}
+              <span className="relative inline-block">
+                Technologies
+
+                <span
+                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-foreground/80 sm:-bottom-2"
+                  aria-hidden="true"
+                />
+              </span>
+              .
+            </span>
+
+            <span className="mt-2 block text-muted-foreground md:mt-3">
+              Ace Your Next Interview.
+            </span>
           </h1>
 
-          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            Browse curated questions across the tools top companies actually ask about, sorted by how often they come up.
+          {/* Subtitle */}
+          <p className="mx-auto mt-7 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base md:mt-8 md:leading-8">
+            Explore the technologies that power the modern web. Build your
+            knowledge, sharpen your skills, and prepare for the technical
+            questions that matter most.
           </p>
 
-          <div className="mt-8 flex justify-center items-center gap-8 text-sm font-medium text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Code2 className="h-4 w-4 text-[var(--color-brand-accent)]" />
+          {/* Statistics */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 text-xs font-medium text-muted-foreground sm:mt-10 sm:gap-3">
+            {/* Core Topics */}
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+              <Code2 className="h-3.5 w-3.5 text-foreground" />
               <span>{initialItems.length} Core Topics</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-[var(--color-brand-accent)]" />
+
+            {/* Categories */}
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+              <Cpu className="h-3.5 w-3.5 text-foreground" />
               <span>{categories.length - 1} Categories</span>
+            </div>
+
+            {/* Popularity */}
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+              <TrendingUp className="h-3.5 w-3.5 text-foreground" />
+              <span>{avgPopularity}% Avg. Popularity</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Grid Content */}
-      <main className="container mx-auto px-4 pt-10">
-        
-        {/* Search Input Bar */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-6">
-          <div className="relative w-full md:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search by name, summary, or category..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-card border-border focus-visible:ring-[var(--color-brand-accent)]"
-            />
-          </div>
+      {/* =====================================================
+          MAIN CONTENT
+      ===================================================== */}
+      <main className="container mx-auto px-4 pt-8">
+        {/* =====================================================
+            RESPONSIVE FILTER BAR
+        ===================================================== */}
+        <div className="mb-8 rounded-2xl border border-border bg-card p-2 shadow-sm">
+          <div className="space-y-3 rounded-xl bg-muted/30 p-3 sm:p-4">
 
-          {/* Difficulty Filter */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-            <SlidersHorizontal className="h-4 w-4 text-muted-foreground mr-1 shrink-0" />
-            {["All", "Beginner", "Intermediate", "Advanced"].map((level) => {
-              const isActive = selectedDifficulty === level;
-              return (
-                <Button
-                  key={level}
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedDifficulty(level)}
-                  className={`rounded-full text-xs shrink-0 ${
-                    isActive
-                      ? "bg-[var(--color-brand-accent)] hover:bg-[var(--color-brand-accent)]/90 text-white"
-                      : "border-border hover:bg-muted"
-                  }`}
+            {/* ---------------------------------------------
+                CATEGORY FILTERS
+            --------------------------------------------- */}
+            <div className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
+
+              {/* Category Label */}
+              <div className="flex shrink-0 items-center gap-2 px-1">
+                <Layers className="h-4 w-4 text-[var(--color-brand-accent)]" />
+
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Prepare For
+                </span>
+              </div>
+
+              {/* Category Pills */}
+              <div className="w-full min-w-0 overflow-x-auto scrollbar-none">
+                <div className="flex w-max items-center gap-1.5 rounded-xl border border-border/70 bg-background p-1">
+
+                  {categories.map((category) => {
+                    const isActive = selectedCategory === category;
+                    const count = categoryCounts[category] || 0;
+
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        onClick={() => setSelectedCategory(category)}
+                        aria-pressed={isActive}
+                        className={`group inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all duration-200 ${
+                          isActive
+                            ? "bg-[var(--color-brand-accent)] text-white shadow-sm"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        <span>{category}</span>
+
+                        <span
+                          className={`flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold ${
+                            isActive
+                              ? "bg-white/20 text-white"
+                              : "bg-muted text-muted-foreground group-hover:bg-background"
+                          }`}
+                        >
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                </div>
+              </div>
+            </div>
+
+            {/* ---------------------------------------------
+                DIVIDER
+            --------------------------------------------- */}
+            <div className="h-px w-full bg-border/60 lg:hidden" />
+
+            {/* ---------------------------------------------
+                DIFFICULTY + CLEAR FILTERS
+            --------------------------------------------- */}
+            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+
+              {/* Difficulty Filters */}
+              <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+
+                <div className="flex shrink-0 items-center gap-2 px-1">
+                  <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
+
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground sm:hidden">
+                    Difficulty
+                  </span>
+                </div>
+
+                <div className="w-full min-w-0 overflow-x-auto scrollbar-none">
+                  <div className="flex w-max items-center gap-1 rounded-xl border border-border/70 bg-background p-1">
+
+                    {["All", "Beginner", "Intermediate", "Advanced"].map(
+                      (level) => {
+                        const isActive = selectedDifficulty === level;
+
+                        return (
+                          <Button
+                            key={level}
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedDifficulty(level)}
+                            className={`h-8 shrink-0 rounded-lg px-3 text-xs font-semibold transition-all duration-200 ${
+                              isActive
+                                ? "bg-foreground text-background shadow-sm hover:bg-foreground/90 hover:text-background"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            }`}
+                          >
+                            {level}
+                          </Button>
+                        );
+                      }
+                    )}
+
+                  </div>
+                </div>
+              </div>
+
+              {/* Clear Filters */}
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="group inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:border-0"
                 >
-                  {level}
-                </Button>
-              );
-            })}
+                  <X className="h-3.5 w-3.5 transition-transform group-hover:rotate-90" />
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {/* ---------------------------------------------
+                TOPIC COUNTER
+            --------------------------------------------- */}
+            <div className="flex items-center justify-between border-t border-border/60 pt-3 lg:justify-end lg:border-t-0 lg:pt-0">
+
+              <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-xs font-medium text-muted-foreground shadow-xs">
+                <LayoutGrid className="h-3.5 w-3.5" />
+
+                <span>
+                  Showing{" "}
+                  <span className="font-bold text-foreground">
+                    {filteredItems.length}
+                  </span>{" "}
+                  topics
+                </span>
+              </div>
+
+            </div>
           </div>
         </div>
 
-        {/* Category Pills Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-4 mb-8 border-b border-border">
-          <Layers className="h-4 w-4 text-muted-foreground mr-1 shrink-0" />
-          {categories.map((cat) => {
-            const isActive = selectedCategory === cat;
-            return (
-              <Button
-                key={cat}
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedCategory(cat)}
-                className={`rounded-lg text-xs shrink-0 ${
-                  isActive
-                    ? "bg-muted font-semibold text-foreground border border-border"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {cat}
-              </Button>
-            );
-          })}
-        </div>
-
-        {/* Card Grid */}
+        {/* =====================================================
+            TECHNOLOGY CARDS
+        ===================================================== */}
         {filteredItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item) => (
-              <TechCard key={item.id} item={item} />
+          <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredItems.map((item, index) => (
+              <div
+                key={item.id}
+                className="h-full animate-in fade-in-0 slide-in-from-bottom-3 fill-mode-both"
+                style={{
+                  animationDelay: `${Math.min(index, 8) * 60}ms`,
+                  animationDuration: "500ms",
+                }}
+              >
+                <TechCard item={item} />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 border border-dashed border-border rounded-xl bg-card/40">
-            <p className="text-foreground text-lg font-semibold">No technologies found</p>
-            <p className="text-sm text-muted-foreground mt-1">Try resetting your search filter or selecting another category.</p>
+          /* Empty State */
+          <div className="space-y-3 rounded-2xl border border-dashed border-border bg-card/30 px-4 py-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Search className="h-5 w-5 text-muted-foreground" />
+            </div>
+
+            <p className="text-base font-bold text-foreground">
+              No matching technologies found
+            </p>
+
+            <p className="mx-auto max-w-sm text-xs text-muted-foreground">
+              There are no available topics matching your selected difficulty
+              level for this category.
+            </p>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetFilters}
+              className="mt-2 rounded-lg text-xs font-semibold"
+            >
+              Reset Filters
+            </Button>
           </div>
         )}
       </main>
