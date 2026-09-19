@@ -1,6 +1,13 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import { User, LayoutDashboard, Compass } from "lucide-react";
+import { 
+  User, 
+  LayoutDashboard, 
+  Compass, 
+  Home, 
+  BookOpen, 
+  Mail 
+} from "lucide-react";
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +30,24 @@ const NAV_ITEMS = [
   { label: "Contact", href: "/contact" },
 ];
 
+const getNavIcon = (label: string) => {
+  const normalized = label.toLowerCase();
+  switch (normalized) {
+    case "home":
+      return <Home className="size-4" />;
+    case "explore":
+    case "resources":
+      return <Compass className="size-4" />;
+    case "blog":
+    case "blogs":
+      return <BookOpen className="size-4" />;
+    case "contact":
+      return <Mail className="size-4" />;
+    default:
+      return <Compass className="size-4" />;
+  }
+};
+
 export default async function Navbar() {
   // Fetch session directly on the server
   const session = await auth.api.getSession({
@@ -43,8 +68,13 @@ export default async function Navbar() {
 
           <nav className="flex items-center space-x-6">
             {NAV_ITEMS.map((item) => (
-              <NavLink key={item.href} href={item.href}>
-                {item.label}
+              <NavLink 
+                key={item.href} 
+                href={item.href}
+                className="flex items-center gap-1.5"
+              >
+                {getNavIcon(item.label)}
+                <span>{item.label}</span>
               </NavLink>
             ))}
           </nav>
