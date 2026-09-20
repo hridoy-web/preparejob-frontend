@@ -9,13 +9,16 @@ export async function proxy(request: NextRequest) {
   // Fast check: verify session cookie existence
   const sessionCookie = getSessionCookie(request);
 
-  // Redirect unauthenticated users trying to access protected dashboards
-  if (!sessionCookie && (pathname.startsWith("/admin") || pathname.startsWith("/user"))) {
+  // But allowing the main /explore listing page
+  const isExploreDetail = pathname.startsWith("/explore/") && pathname !== "/explore";
+  const isProtectedDashboard = pathname.startsWith("/admin") || pathname.startsWith("/user");
+
+  if (!sessionCookie && (isProtectedDashboard || isExploreDetail)) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Validate session and role access for dashboard routes
-  if (sessionCookie && (pathname.startsWith("/admin") || pathname.startsWith("/user"))) {
+  // Validate session and role access for dashboard & explore detail routes
+  if (sessionCookie && (isProtectedDashboard || isExploreDetail)) {
     try {
       const session = await auth.api.getSession({
         headers: request.headers,
@@ -50,5 +53,6 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/user/:path*",
+    "/explore/:path+",
   ],
 };
