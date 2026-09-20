@@ -193,7 +193,7 @@ export default function AdminBlogsPage() {
                   </div>
 
                   <div className="flex items-center gap-2 self-end sm:self-center">
-                    {/* View Button: Opens Smooth Modal without page reload */}
+                    {/* View Button */}
                     <Button
                       size="sm"
                       variant="outline"
@@ -283,59 +283,71 @@ export default function AdminBlogsPage() {
         )}
       </Card>
 
-      {/* Blog Details View Modal */}
+      {/* Modern & Full Visible Blog Details View Modal */}
       <Dialog open={Boolean(viewBlog)} onOpenChange={() => setViewBlog(null)}>
-        <DialogContent className="sm:max-w-xl rounded-2xl p-6 bg-white border border-slate-200 max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-slate-900 pr-6">
+        <DialogContent className="sm:max-w-3xl rounded-3xl p-6 sm:p-8 bg-white border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="space-y-3 pb-4 border-b border-slate-100">
+            <div className="flex flex-wrap items-center gap-2">
+              {viewBlog?.category && (
+                <span className="inline-flex items-center font-bold px-3 py-1 rounded-xl text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase tracking-wider">
+                  {viewBlog.category}
+                </span>
+              )}
+              {viewBlog?.readTime && (
+                <span className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-xl bg-slate-100 text-slate-700 border border-slate-200">
+                  {viewBlog.readTime}
+                </span>
+              )}
+              {viewBlog?.status && (
+                <span className={`text-xs font-semibold px-3 py-1 rounded-xl ${
+                  viewBlog.status === "Published"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    : "bg-amber-50 text-amber-700 border border-amber-200"
+                }`}>
+                  {viewBlog.status}
+                </span>
+              )}
+            </div>
+            <DialogTitle className="text-xl sm:text-2xl font-bold text-slate-900 font-urbanist leading-snug pr-8">
               {viewBlog?.title}
             </DialogTitle>
           </DialogHeader>
 
           {viewBlog && (
-            <div className="space-y-4 my-2">
-              <div className="flex flex-wrap items-center gap-2">
-                {viewBlog.category && (
-                  <span className="inline-flex items-center font-bold px-2.5 py-1 rounded-md text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase">
-                    {viewBlog.category}
-                  </span>
-                )}
-                {viewBlog.readTime && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                    {viewBlog.readTime}
-                  </span>
-                )}
-              </div>
-
+            <div className="space-y-6 my-4">
+              {/* Full Banner Image Fix (Object Contain / Aspect Video for complete view) */}
               {viewBlog.bannerImage && (
-                <div className="relative w-full h-48 rounded-xl overflow-hidden border border-slate-100">
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-slate-100 bg-slate-900 shadow-sm flex items-center justify-center">
                   <Image
                     src={typeof viewBlog.bannerImage === "string" ? viewBlog.bannerImage : viewBlog.bannerImage.url}
                     alt={viewBlog.title}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                   />
                 </div>
               )}
 
-              {viewBlog.content && (
-                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Article Content</span>
-                  <p className="text-xs sm:text-sm text-slate-700 whitespace-pre-line leading-relaxed">
-                    {viewBlog.content}
-                  </p>
+              {/* Meta Info Bar */}
+              <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div>
+                  <span className="font-semibold text-slate-700">Published Date: </span>
+                  {viewBlog.createdAt ? new Date(viewBlog.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "N/A"}
                 </div>
-              )}
+                <div>
+                  <span className="font-semibold text-slate-700">Slug: </span>
+                  <span className="text-indigo-600 font-mono">{viewBlog.slug || "N/A"}</span>
+                </div>
+              </div>
             </div>
           )}
 
-          <DialogFooter>
+          <DialogFooter className="pt-4 border-t border-slate-100">
             <Button
               type="button"
               onClick={() => setViewBlog(null)}
-              className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm h-10 px-4 cursor-pointer"
+              className="rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm h-11 px-6 cursor-pointer w-full sm:w-auto"
             >
-              Close
+              Close Preview
             </Button>
           </DialogFooter>
         </DialogContent>
