@@ -10,6 +10,14 @@ export const auth = betterAuth({
     enabled: true,
   },
 
+  // Google Social Login Configuration
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
+
   database: mongodbAdapter(db, {
     client,
   }),
@@ -21,7 +29,6 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         defaultValue: "user",
-        // Input validation options if needed
       },
       status: {
         type: "string",
@@ -29,7 +36,7 @@ export const auth = betterAuth({
         defaultValue: "active",
       },
       bookmarks: {
-        type: "string[]", // Defines an array of strings (e.g., question IDs)
+        type: "string[]",
         required: false,
         defaultValue: [],
       },
