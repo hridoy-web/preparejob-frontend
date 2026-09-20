@@ -211,7 +211,7 @@ export function QuestionCard({
             <Code2 className="h-5 w-5" />
           </div>
 
-          <div className="min-w-0 space-y-1.5">
+          <div className="min-w-0 space-y-2.5">
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="font-bold uppercase tracking-wider text-slate-400 font-lexend">
                 Question {index + 1}
