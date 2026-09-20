@@ -3,9 +3,10 @@ import { Code2, Terminal, Braces, GitBranch } from "lucide-react";
 
 export default function RegisterPage() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-brand-surface px-4 py-10 sm:px-6">
-      {/* Background gradient */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-brand-accent/10 via-transparent to-transparent" />
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50/50 p-4 py-12">
+      {/* Decorative modern ambient color glows */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-indigo-500/15 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-cyan-400/15 blur-[120px]" />
 
       {/* Top-left glow */}
       <div className="pointer-events-none absolute -left-40 -top-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/15 blur-3xl" />

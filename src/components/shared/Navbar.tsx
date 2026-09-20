@@ -4,9 +4,7 @@ import {
   User, 
   LayoutDashboard, 
   Compass, 
-  Home, 
-  BookOpen, 
-  Mail 
+  ArrowRight
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -30,26 +28,7 @@ const NAV_ITEMS = [
   { label: "Contact", href: "/contact" },
 ];
 
-const getNavIcon = (label: string) => {
-  const normalized = label.toLowerCase();
-  switch (normalized) {
-    case "home":
-      return <Home className="size-4" />;
-    case "explore":
-    case "resources":
-      return <Compass className="size-4" />;
-    case "blog":
-    case "blogs":
-      return <BookOpen className="size-4" />;
-    case "contact":
-      return <Mail className="size-4" />;
-    default:
-      return <Compass className="size-4" />;
-  }
-};
-
 export default async function Navbar() {
-  // Fetch session directly on the server
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -59,21 +38,20 @@ export default async function Navbar() {
   const dashboardLink = isAdmin ? "/admin" : "/user";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center px-4">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md font-lexend">
+      <div className="max-w-7xl mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">
         
         {/* Desktop Layout */}
         <div className="hidden md:flex items-center justify-between w-full">
           <Logo />
 
-          <nav className="flex items-center space-x-6">
+          <nav className="flex items-center space-x-5 lg:space-x-8" aria-label="Main Navigation">
             {NAV_ITEMS.map((item) => (
               <NavLink 
                 key={item.href} 
                 href={item.href}
-                className="flex items-center gap-1.5"
+                className="text-slate-600 hover:text-slate-950 font-medium transition-colors text-sm lg:text-base"
               >
-                {getNavIcon(item.label)}
                 <span>{item.label}</span>
               </NavLink>
             ))}
@@ -83,53 +61,65 @@ export default async function Navbar() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
-                    <Avatar className="h-9 w-9">
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 cursor-pointer">
+                    <Avatar className="h-9 w-9 border border-slate-200">
                       <AvatarImage src={user.image || ""} alt={user.name || "User Avatar"} />
-                      <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
+                      <AvatarFallback className="bg-indigo-50 text-indigo-600 font-bold">
+                        {user.name?.charAt(0) || "U"}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="flex flex-col space-y-1 p-2">
-                    <p className="text-sm font-medium leading-none">{user.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                <DropdownMenuContent align="end" className="w-56 rounded-2xl p-1.5 border-slate-200 shadow-xl">
+                  <div className="flex flex-col space-y-1 p-2.5 bg-slate-50 rounded-xl mb-1">
+                    <p className="text-sm font-bold text-slate-900 leading-none">{user.name}</p>
+                    <p className="text-xs leading-none text-slate-500 mt-1 truncate">{user.email}</p>
                   </div>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-slate-100 my-1" />
                   
-                  {/* Show My Profile only for regular users */}
                   {!isAdmin && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/user/profile" className="w-full cursor-pointer flex items-center gap-2">
-                        <User className="h-4 w-4" /> My Profile
+                    <DropdownMenuItem asChild className="rounded-xl cursor-pointer py-2.5">
+                      <Link href="/user/profile" className="w-full flex items-center gap-2.5 font-medium text-slate-700">
+                        <User className="h-4 w-4 text-slate-500" /> My Profile
                       </Link>
                     </DropdownMenuItem>
                   )}
 
-                  <DropdownMenuItem asChild>
-                    <Link href={dashboardLink} className="w-full cursor-pointer flex items-center gap-2">
-                      <LayoutDashboard className="h-4 w-4" /> Dashboard
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer py-2.5">
+                    <Link href={dashboardLink} className="w-full flex items-center gap-2.5 font-medium text-slate-700">
+                      <LayoutDashboard className="h-4 w-4 text-slate-500" /> Dashboard
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/explore" className="w-full cursor-pointer flex items-center gap-2">
-                      <Compass className="h-4 w-4" /> Explore Questions
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer py-2.5">
+                    <Link href="/explore" className="w-full flex items-center gap-2.5 font-medium text-slate-700">
+                      <Compass className="h-4 w-4 text-slate-500" /> Explore Questions
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-slate-100 my-1" />
                   <LogoutMenuItem />
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link href="/login">Login</Link>
+              <div className="flex items-center gap-2 lg:gap-2.5">
+                <Button 
+                  variant="ghost" 
+                  asChild
+                  className="h-10 px-5 rounded-full text-slate-700 hover:text-slate-950 hover:bg-slate-100/80 font-semibold transition-all cursor-pointer text-sm"
+                >
+                  <Link href="/login">Log in</Link>
                 </Button>
-                <Button asChild className="rounded-lg">
-                  <Link href="/register">Register</Link>
+
+                <Button 
+                  asChild 
+                  className="group h-10 px-5 rounded-full bg-slate-950 text-white hover:bg-slate-800 font-bold shadow-sm transition-all duration-300 cursor-pointer flex items-center gap-2 text-sm"
+                >
+                  <Link href="/register">
+                    <span>Get Started</span>
+                    <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
                 </Button>
-              </>
+              </div>
             )}
           </div>
         </div>

@@ -83,7 +83,7 @@ export default function RootLayout({
           <ConditionalLayout>
             <Footer />
           </ConditionalLayout>
-          <Toaster position="top-right" richColors />
+          <Toaster position="top-center" richColors />
         </TooltipProvider>
       </body>
     </html>
