@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback, use } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,9 +18,12 @@ import {
   Edit3,
   CheckCircle2,
   Layers,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { updateQuestion, getAllQuestions } from "@/lib/apiActions/questionApi";
+import { updateQuestion, getQuestionById } from "@/lib/apiActions/questionApi";
+import Link from "next/link";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -44,13 +46,29 @@ export default function EditQuestionPage({ params }: PageProps) {
     advancedAnswer: "",
   });
 
+  // Dynamic Key Points State
+  const [keyPoints, setKeyPoints] = useState<string[]>([""]);
+
+  const handleAddKeyPoint = () => {
+    setKeyPoints([...keyPoints, ""]);
+  };
+
+  const handleRemoveKeyPoint = (index: number) => {
+    const updated = keyPoints.filter((_, i) => i !== index);
+    setKeyPoints(updated.length > 0 ? updated : [""]);
+  };
+
+  const handleKeyPointChange = (index: number, value: string) => {
+    const updated = [...keyPoints];
+    updated[index] = value;
+    setKeyPoints(updated);
+  };
+
+  // সরাসরি ব্যাকএন্ডের getQuestionById ব্যবহার করে নির্দিষ্ট কোয়েশ্চেন ফেচ করা
   const fetchSingleQuestion = useCallback(async () => {
     try {
-      const res = await getAllQuestions();
-      const rawData = res?.data?.questions || res?.data || res?.questions || res || [];
-      const questionsList = Array.isArray(rawData) ? rawData : [];
-
-      const currentQ = questionsList.find((q: { _id: string }) => q._id === id);
+      const res = await getQuestionById(id);
+      const currentQ = res?.data || res;
 
       if (currentQ) {
         setFormData({
@@ -61,6 +79,22 @@ export default function EditQuestionPage({ params }: PageProps) {
           easyAnswer: currentQ.easyAnswer?.explanation || "",
           advancedAnswer: currentQ.advancedAnswer?.explanation || "",
         });
+
+        // Extract and set existing key points safely
+        const rawKP = currentQ.easyAnswer?.keyPoints || [];
+        const formattedKP = rawKP
+          .map((kp: unknown) => {
+            if (typeof kp === "string") return kp;
+            if (kp && typeof kp === "object" && "point" in kp) {
+              return (kp as { point: string }).point;
+            }
+            return "";
+          })
+          .filter(Boolean);
+
+        if (formattedKP.length > 0) {
+          setKeyPoints(formattedKP);
+        }
       } else {
         toast.error("Question not found");
         router.push("/admin/questions");
@@ -71,6 +105,7 @@ export default function EditQuestionPage({ params }: PageProps) {
       } else {
         toast.error("Failed to load question details");
       }
+      router.push("/admin/questions");
     } finally {
       setFetching(false);
     }
@@ -93,8 +128,18 @@ export default function EditQuestionPage({ params }: PageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.easyAnswer) {
+    if (!formData.title || !formData.easyAnswer || !formData.advancedAnswer) {
       toast.error("Please fill in all required fields!");
+      return;
+    }
+
+    // Validate key points
+    const formattedKeyPoints = keyPoints
+      .map((kp) => kp.trim())
+      .filter((kp) => kp.length > 0);
+
+    if (formattedKeyPoints.length === 0) {
+      toast.error("Please provide at least 1 key point!");
       return;
     }
 
@@ -108,12 +153,11 @@ export default function EditQuestionPage({ params }: PageProps) {
         importanceTag: formData.importanceTag,
         easyAnswer: {
           explanation: formData.easyAnswer,
+          keyPoints: formattedKeyPoints,
         },
-        ...(formData.advancedAnswer && {
-          advancedAnswer: {
-            explanation: formData.advancedAnswer,
-          },
-        }),
+        advancedAnswer: {
+          explanation: formData.advancedAnswer,
+        },
       };
 
       await updateQuestion(id, payload);
@@ -177,7 +221,7 @@ export default function EditQuestionPage({ params }: PageProps) {
               Update Question Details
             </h2>
             <p className="text-xs text-slate-500">
-              Modify the question text, difficulty, tags, or answer explanations.
+              Modify the question text, difficulty, tags, key points, or explanations.
             </p>
           </div>
         </div>
@@ -195,7 +239,7 @@ export default function EditQuestionPage({ params }: PageProps) {
           <Button
             onClick={handleSubmit}
             disabled={loading}
-            className="h-10 px-5 bg-brand-accent hover:bg-indigo-700 text-white font-medium rounded-xl shadow-xs transition-all text-xs sm:text-sm"
+            className="h-10 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-xs transition-all text-xs sm:text-sm cursor-pointer"
           >
             {loading ? (
               <>
@@ -240,7 +284,7 @@ export default function EditQuestionPage({ params }: PageProps) {
             <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl">
               <CardHeader className="border-b border-slate-100 py-3.5 px-4 sm:px-6">
                 <CardTitle className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-2">
-                  <FileText className="size-4 text-indigo-600 shrink-0" /> Answers & Explanations
+                  <FileText className="size-4 text-indigo-600 shrink-0" /> Answers, Key Points & Explanations
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 sm:p-6 space-y-5">
@@ -264,10 +308,58 @@ export default function EditQuestionPage({ params }: PageProps) {
                   />
                 </div>
 
-                <div className="space-y-1.5">
+                {/* Dynamic Key Points Section (Required) */}
+                <div className="space-y-3 pt-2 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                      <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
+                      Core Concepts / Key Points <span className="text-rose-500">*</span>
+                    </Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddKeyPoint}
+                      className="h-7 px-2.5 text-xs font-medium rounded-lg border-indigo-200 text-indigo-700 hover:bg-indigo-50 cursor-pointer"
+                    >
+                      <Plus className="size-3.5 mr-1" /> Add Point
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {keyPoints.map((point, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-mono text-[11px] font-bold text-slate-600">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <Input
+                          required={index === 0}
+                          placeholder={`Key point ${index + 1} (e.g. Tracks code changes over time)`}
+                          value={point}
+                          onChange={(e) => handleKeyPointChange(index, e.target.value)}
+                          className="rounded-xl border-slate-200 h-9 text-xs focus-visible:ring-indigo-500 flex-1"
+                        />
+                        {keyPoints.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveKeyPoint(index)}
+                            className="size-9 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl shrink-0 cursor-pointer"
+                            title="Remove point"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 pt-2 border-t border-slate-100">
                   <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="advancedAnswer" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                      <Sparkles className="size-3.5 text-indigo-600 shrink-0" /> Advanced Answer
+                      <Sparkles className="size-3.5 text-indigo-600 shrink-0" /> Advanced Answer <span className="text-rose-500">*</span>
                     </Label>
                     <span className="text-[10px] font-medium px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-md shrink-0">
                       In-depth Concept
@@ -275,7 +367,8 @@ export default function EditQuestionPage({ params }: PageProps) {
                   </div>
                   <Textarea
                     id="advancedAnswer"
-                    rows={6}
+                    required
+                    rows={5}
                     placeholder="Provide deep technical details..."
                     value={formData.advancedAnswer}
                     onChange={(e) => setFormData({ ...formData, advancedAnswer: e.target.value })}
@@ -303,7 +396,7 @@ export default function EditQuestionPage({ params }: PageProps) {
                     id="technology"
                     value={formData.technology}
                     onChange={(e) => setFormData({ ...formData, technology: e.target.value })}
-                    className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                   >
                     <option value="javascript">JavaScript</option>
                     <option value="react">React</option>
@@ -312,11 +405,15 @@ export default function EditQuestionPage({ params }: PageProps) {
                     <option value="nextjs">Next.js</option>
                     <option value="expressjs">Express.js</option>
                     <option value="mongodb">MongoDB</option>
-                    <option value="tailwind">Tailwind CSS</option>
+                    <option value="mongoose">Mongoose</option>
+                    <option value="tailwind-css">Tailwind CSS</option>
                     <option value="css3">CSS3</option>
                     <option value="html5">HTML5</option>
                     <option value="postgresql">PostgreSQL</option>
                     <option value="prisma">Prisma ORM</option>
+                    <option value="redis">Redis</option>
+                    <option value="git-github">Git & GitHub</option>
+                    <option value="docker">Docker</option>
                   </select>
                 </div>
 
@@ -328,7 +425,7 @@ export default function EditQuestionPage({ params }: PageProps) {
                     id="difficulty"
                     value={formData.difficulty}
                     onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                    className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                   >
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
@@ -344,7 +441,7 @@ export default function EditQuestionPage({ params }: PageProps) {
                     id="importanceTag"
                     value={formData.importanceTag}
                     onChange={(e) => setFormData({ ...formData, importanceTag: e.target.value })}
-                    className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                   >
                     <option value="Top Asked">Top Asked</option>
                     <option value="High Priority">High Priority</option>
@@ -359,7 +456,7 @@ export default function EditQuestionPage({ params }: PageProps) {
                 <CheckCircle2 className="size-3.5 text-indigo-600 shrink-0" /> Edit Instructions
               </div>
               <p className="text-xs text-indigo-800/80 leading-relaxed">
-                Updating this question will immediately affect candidate practice tests and cached interview resources.
+                Updating this question and key points will immediately affect candidate practice tests and cached interview resources.
               </p>
             </div>
           </div>
@@ -380,7 +477,7 @@ export default function EditQuestionPage({ params }: PageProps) {
             onClick={handleSubmit}
             disabled={loading}
             size="sm"
-            className="flex-1 bg-brand-accent hover:bg-indigo-700 text-white font-medium rounded-xl text-xs"
+            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-xs cursor-pointer"
           >
             {loading ? (
               <>

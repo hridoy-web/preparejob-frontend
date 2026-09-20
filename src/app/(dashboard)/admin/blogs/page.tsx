@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Plus, FileText, Eye, Edit, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { getAllBlogs, deleteBlog } from "@/lib/apiActions/blogsApi";
@@ -27,6 +35,8 @@ interface Blog {
   slug?: string;
   category?: string;
   readTime?: string;
+  content?: string;
+  bannerImage?: { url: string } | string;
 }
 
 interface PaginationMeta {
@@ -41,8 +51,9 @@ export default function AdminBlogsPage() {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Selected blog state for delete modal
+  // Selected blog states for delete and view modals
   const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
+  const [viewBlog, setViewBlog] = useState<Blog | null>(null);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -133,7 +144,7 @@ export default function AdminBlogsPage() {
           <p className="text-sm text-slate-500 mt-0.5">Publish and edit articles for job seekers.</p>
         </div>
 
-        <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs h-11 px-5">
+        <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs h-11 px-5 cursor-pointer">
           <Link href="/admin/blogs/create">
             <Plus className="size-4 mr-2" /> Write New Blog
           </Link>
@@ -182,14 +193,18 @@ export default function AdminBlogsPage() {
                   </div>
 
                   <div className="flex items-center gap-2 self-end sm:self-center">
-                    <Button asChild size="sm" variant="outline" className="rounded-lg text-slate-600">
-                      <Link href={`/blog/${blogSlug}`} target="_blank">
-                        <Eye className="size-3.5 mr-1" /> View
-                      </Link>
+                    {/* View Button: Opens Smooth Modal without page reload */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setViewBlog(blog)}
+                      className="rounded-lg text-slate-600 cursor-pointer"
+                    >
+                      <Eye className="size-3.5 mr-1" /> View
                     </Button>
 
-                    {/* Edit button updated to use Slug */}
-                    <Button asChild size="sm" variant="outline" className="rounded-lg text-slate-600">
+                    {/* Edit button */}
+                    <Button asChild size="sm" variant="outline" className="rounded-lg text-slate-600 cursor-pointer">
                       <Link href={`/admin/blogs/edit/${blogSlug}`}>
                         <Edit className="size-3.5 mr-1" /> Edit
                       </Link>
@@ -200,7 +215,7 @@ export default function AdminBlogsPage() {
                       variant="ghost"
                       disabled={deletingId === blogId}
                       onClick={() => setBlogToDelete(blog)}
-                      className="rounded-lg text-rose-600 hover:bg-rose-50"
+                      className="rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
                     >
                       {deletingId === blogId ? (
                         <Loader2 className="size-3.5 animate-spin" />
@@ -228,7 +243,7 @@ export default function AdminBlogsPage() {
                 variant="outline"
                 disabled={currentPage === 1}
                 onClick={() => handlePageChange(currentPage - 1)}
-                className="h-8 px-2.5 rounded-lg text-xs"
+                className="h-8 px-2.5 rounded-lg text-xs cursor-pointer"
               >
                 <ChevronLeft className="size-3.5 mr-1" /> Back
               </Button>
@@ -243,7 +258,7 @@ export default function AdminBlogsPage() {
                     size="sm"
                     variant={isActive ? "default" : "outline"}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`h-8 w-8 p-0 rounded-lg text-xs font-semibold ${
+                    className={`h-8 w-8 p-0 rounded-lg text-xs font-semibold cursor-pointer ${
                       isActive
                         ? "bg-indigo-600 text-white hover:bg-indigo-700"
                         : "text-slate-600 hover:bg-slate-100"
@@ -259,7 +274,7 @@ export default function AdminBlogsPage() {
                 variant="outline"
                 disabled={currentPage === pagination.totalPages}
                 onClick={() => handlePageChange(currentPage + 1)}
-                className="h-8 px-2.5 rounded-lg text-xs"
+                className="h-8 px-2.5 rounded-lg text-xs cursor-pointer"
               >
                 Next <ChevronRight className="size-3.5 ml-1" />
               </Button>
@@ -267,6 +282,64 @@ export default function AdminBlogsPage() {
           </div>
         )}
       </Card>
+
+      {/* Blog Details View Modal */}
+      <Dialog open={Boolean(viewBlog)} onOpenChange={() => setViewBlog(null)}>
+        <DialogContent className="sm:max-w-xl rounded-2xl p-6 bg-white border border-slate-200 max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 pr-6">
+              {viewBlog?.title}
+            </DialogTitle>
+          </DialogHeader>
+
+          {viewBlog && (
+            <div className="space-y-4 my-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {viewBlog.category && (
+                  <span className="inline-flex items-center font-bold px-2.5 py-1 rounded-md text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase">
+                    {viewBlog.category}
+                  </span>
+                )}
+                {viewBlog.readTime && (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                    {viewBlog.readTime}
+                  </span>
+                )}
+              </div>
+
+              {viewBlog.bannerImage && (
+                <div className="relative w-full h-48 rounded-xl overflow-hidden border border-slate-100">
+                  <Image
+                    src={typeof viewBlog.bannerImage === "string" ? viewBlog.bannerImage : viewBlog.bannerImage.url}
+                    alt={viewBlog.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+
+              {viewBlog.content && (
+                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Article Content</span>
+                  <p className="text-xs sm:text-sm text-slate-700 whitespace-pre-line leading-relaxed">
+                    {viewBlog.content}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={() => setViewBlog(null)}
+              className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm h-10 px-4 cursor-pointer"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Alert Dialog */}
       <AlertDialog open={!!blogToDelete} onOpenChange={(open) => !open && setBlogToDelete(null)}>
@@ -284,13 +357,13 @@ export default function AdminBlogsPage() {
           </AlertDialogHeader>
 
           <AlertDialogFooter className="mt-6 flex items-center justify-end gap-3">
-            <AlertDialogCancel className="rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700">
+            <AlertDialogCancel className="rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer">
               Cancel
             </AlertDialogCancel>
             
             <AlertDialogAction
               onClick={confirmDelete}
-              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-600 font-medium"
+              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-600 font-medium cursor-pointer"
             >
               {deletingId ? (
                 <span className="flex items-center gap-2">

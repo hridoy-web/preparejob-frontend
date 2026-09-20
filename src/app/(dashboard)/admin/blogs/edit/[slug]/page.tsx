@@ -59,7 +59,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         if (blogData) {
           setBlogId(blogData._id || blogData.id || "");
           setTitle(blogData.title || "");
-          setCategory(blogData.category || "");
+          setCategory(blogData.category || blogData.cat || "");
           setReadTime(blogData.readTime || "5 min read");
           setContent(blogData.content || "");
 
@@ -103,6 +103,11 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
       return;
     }
 
+    if (!blogId) {
+      toast.error("Blog ID missing!");
+      return;
+    }
+
     try {
       setSubmitting(true);
 
@@ -119,6 +124,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
       await updateBlog(blogId, formData);
       toast.success("Blog updated successfully!");
       router.push("/admin/blogs");
+      router.refresh();
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to update blog";
       toast.error(msg);
@@ -177,14 +183,14 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
               type="button"
               variant="ghost"
               onClick={() => router.push("/admin/blogs")}
-              className="rounded-xl text-slate-600 hover:bg-slate-100 text-xs px-4"
+              className="rounded-xl text-slate-600 hover:bg-slate-100 text-xs px-4 cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={submitting}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs px-5 h-10 text-xs font-medium"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs px-5 h-10 text-xs font-medium cursor-pointer"
             >
               {submitting ? (
                 <>
@@ -271,6 +277,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
                 </div>
               </div>
 
+              {/* Category Input Field */}
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
                   <Tag className="size-3.5 text-indigo-600" /> Category <span className="text-rose-500">*</span>
@@ -278,12 +285,13 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
                 <Input
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  placeholder="e.g. React, Career, Dev Life"
+                  placeholder="e.g. Career, Web Development"
                   className="rounded-xl border-slate-200/80 bg-slate-50/30 focus:bg-white text-sm h-11"
                   required
                 />
               </div>
 
+              {/* Read Time Input Field */}
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
                   <Clock className="size-3.5 text-indigo-600" /> Read Time
