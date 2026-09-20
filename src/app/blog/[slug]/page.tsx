@@ -74,10 +74,17 @@ export default async function SingleBlogPage({ params }: SingleBlogPageProps) {
           </div>
         </header>
 
-        {/* Banner Image */}
-        <div className="relative my-8 aspect-[16/9] w-full overflow-hidden rounded-3xl bg-slate-100 shadow-md">
+      
+        <div className="relative my-8 aspect-[16/9] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-md flex items-center justify-center">
           {imageUrl ? (
-            <Image src={imageUrl} alt={title || "Blog banner"} fill priority className="object-cover" sizes="(max-width: 1280px) 100vw, 1024px" />
+            <Image 
+              src={imageUrl} 
+              alt={title || "Blog banner"} 
+              fill 
+              priority 
+              className="object-contain" 
+              sizes="(max-width: 1280px) 100vw, 1024px" 
+            />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-lg font-bold text-white">
               No Image Available

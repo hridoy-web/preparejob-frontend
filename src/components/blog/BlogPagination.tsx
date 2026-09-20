@@ -9,7 +9,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function BlogPagination({
   currentPage,
@@ -20,6 +20,7 @@ export default function BlogPagination({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter(); 
 
   if (totalPages <= 1) return null;
 
@@ -27,6 +28,12 @@ export default function BlogPagination({
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", page.toString());
     return `${pathname}?${params.toString()}`;
+  };
+
+  const handlePageChange = (e: React.MouseEvent<HTMLAnchorElement>, page: number | string) => {
+    e.preventDefault();
+    const url = createPageURL(page);
+    router.push(url, { scroll: false });
   };
 
   const isFirst = currentPage <= 1;
@@ -56,8 +63,9 @@ export default function BlogPagination({
         <PaginationItem>
           <PaginationPrevious
             href={isFirst ? "#" : createPageURL(currentPage - 1)}
+            onClick={(e) => !isFirst && handlePageChange(e, currentPage - 1)}
             tabIndex={isFirst ? -1 : undefined}
-            className={isFirst ? disabledBtnStyle : "hover:bg-slate-100"}
+            className={isFirst ? disabledBtnStyle : "hover:bg-slate-100 cursor-pointer"}
           />
         </PaginationItem>
 
@@ -71,11 +79,12 @@ export default function BlogPagination({
             ) : (
               <PaginationLink
                 href={createPageURL(page)}
+                onClick={(e) => handlePageChange(e, page)}
                 isActive={page === currentPage}
                 className={
                   page === currentPage
-                    ? "!bg-slate-900 !text-white hover:!bg-slate-800"
-                    : "hover:bg-slate-100"
+                    ? "bg-slate-900! text-white! hover:bg-slate-800! cursor-pointer"
+                    : "hover:bg-slate-100 cursor-pointer"
                 }
               >
                 {page}
@@ -88,11 +97,12 @@ export default function BlogPagination({
         <PaginationItem>
           <PaginationNext
             href={isLast ? "#" : createPageURL(currentPage + 1)}
+            onClick={(e) => !isLast && handlePageChange(e, currentPage + 1)}
             tabIndex={isLast ? -1 : undefined}
-            className={isLast ? disabledBtnStyle : "hover:bg-slate-100"}
+            className={isLast ? disabledBtnStyle : "hover:bg-slate-100 cursor-pointer"}
           />
         </PaginationItem>
       </PaginationContent>
     </Pagination>
   );
-}                                                                 
+}

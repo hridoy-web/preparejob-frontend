@@ -1,19 +1,22 @@
 import { Sparkles } from "lucide-react";
+
 export default function BlogHeader() {
   return (
-    <header className="mx-auto max-w-5xl text-center">
-      <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3.5 py-1 text-xs font-bold text-[var(--color-brand-accent)]">
-        <Sparkles className="size-3.5" aria-hidden="true" />
-        <span>Inside the Hiring Mind</span>
+    <header className="mx-auto max-w-4xl text-center">
+      {/* Top Tag */}
+      <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/25 bg-indigo-50 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 shadow-2xs">
+        <Sparkles className="size-4" aria-hidden="true" />
+        <span>Expert Articles & Industry Insights</span>
       </div>
 
-      <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-        Prepare Smarter. <span className="ai-gradient-text">Get Hired.</span>
+      {/* Professional & Meaningful Heading for Blog */}
+      <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl lg:text-6xl leading-tight">
+      Read & Explore <br/> <span className="text-indigo-600">Elevate Your Tech Career.</span>
       </h1>
 
-      <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
-        Understand what interviewers look for. Prepare smarter, answer with
-        confidence, and stand out when it matters.
+      {/* Meaningful Description */}
+      <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-normal">
+        Explore deep guidelines, AI trends, full-stack web development roadmaps, and insider career strategies to accelerate your professional growth in the tech industry.
       </p>
     </header>
   );

@@ -1,22 +1,18 @@
-import AIFeature from "@/components/home/AIFeature";
+
 import FAQSection from "@/components/home/FAQSection";
 import HeroSection from "@/components/home/hero/HeroSection";
+import { TechRoadmapSection } from "@/components/home/TechRoadmapSection";
 
-import HotTopicsCards from "@/components/home/HotTopicsCards";
-import TopicCardSkeleton from "@/components/home/HotTopicsSection/TopicCardSkeleton";
-import TechStack from "@/components/home/TechStack";
+// import TechStack from "@/components/home/TechStack";
+import { TrendingTechSection } from "@/components/home/TrendingTechSection";
 import Workflow from "@/components/home/Workflow";
-import { Suspense } from "react";
 
 export default function Home() {
   return (
     <>
       <HeroSection/>
-      <Suspense fallback={<TopicCardSkeleton />}>
-        <HotTopicsCards />
-      </Suspense>
-      <TechStack />
-      <AIFeature />
+      <TrendingTechSection/>
+     <TechRoadmapSection/>
       <Workflow/>
       <FAQSection/>
     </>

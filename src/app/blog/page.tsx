@@ -18,14 +18,14 @@ export const metadata: Metadata = {
 
 const CATEGORIES = [
   "All",
-  "Frontend & UI",
-  "Backend & APIs",
-  "Databases",
-  "Behavioral",
-  "Interview Prep",
+  "Frontend",
+  "Backend",
+  "Database",
+  "AI",
+  "Interview",
 ] as const;
 
-const LIMIT = 6;
+const LIMIT = 7;
 
 interface BlogPageProps {
   searchParams: Promise<{ search?: string; category?: string; page?: string }>;
@@ -66,7 +66,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const regularBlogs = page === 1 ? blogs.slice(1) : blogs;
 
   return (
-    <main className="min-h-screen bg-[var(--color-brand-surface)] py-12">
+    <main className="min-h-screen bg-brand-surface py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <BlogHeader />
 
