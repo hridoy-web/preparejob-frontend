@@ -1,14 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  BookOpen,
-  Code2,
-  Flame,
-  Sparkles,
-  Target,
-} from "lucide-react";
+import { ArrowLeft, BookOpen, Code2, Flame, Target, Sparkles } from "lucide-react";
 
 import { EXPLORE_TECH_ITEMS } from "@/lib/api/explore/card-data";
 import { getAllQuestions } from "@/lib/apiActions/questionApi";
@@ -34,191 +27,118 @@ export default async function ExploreDetailPage({
   const questions: Question[] = response?.data?.questions || [];
 
   return (
-    <div className="min-h-screen bg-background pb-24 text-foreground">
+    <div className="min-h-screen bg-background pb-20 text-foreground font-lexend">
       <main className="container mx-auto max-w-6xl px-4 pt-6 sm:pt-8">
-        {/* Back Navigation */}
+        
         <Link
           href="/explore"
-          className="group mb-8 inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
+          className="group mb-5 inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
           Back to Technologies
         </Link>
 
-        {/* Technology Header Section */}
-        <section className="relative mb-12 overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8 lg:p-10">
-          <div className="relative">
-            {/* Header Badges */}
-            <div className="mb-8 flex flex-wrap items-center gap-2">
-              {/* Practice Badge */}
-              <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:border-indigo-400/20 dark:bg-indigo-400/10 dark:text-indigo-300">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-500" />
-                Focused Practice
-              </span>
+        <section className="relative mb-8 overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-6 lg:p-8 shadow-xs">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            
+            <div className="space-y-4 max-w-2xl">
+              
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-xl border border-sky-200/80 bg-sky-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-sky-700">
+                  <Code2 className="h-3 w-3" />
+                  {tech.category}
+                </span>
 
-              {/* Category Badge */}
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-300">
-                <Code2 className="h-3 w-3" />
-                {tech.category}
-              </span>
-
-              {/* Difficulty Badge */}
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
-                <Target className="h-3 w-3" />
-                {tech.difficulty}
-              </span>
-            </div>
-
-            {/* Main Header Content */}
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-              {/* Technology Information */}
-              <div className="min-w-0 max-w-3xl">
-                {/* Technology Identity */}
-                <div className="mb-7 flex items-center gap-4">
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/30 p-3 shadow-sm transition-transform duration-300 hover:scale-105 sm:h-20 sm:w-20">
-                    <Image
-                      src={tech.logo}
-                      alt={`${tech.name} logo`}
-                      width={48}
-                      height={48}
-                      className="object-contain"
-                      unoptimized
-                    />
-                  </div>
-
-                  <div>
-                    <p className="mb-1 text-xs font-medium text-muted-foreground">
-                      Your next interview starts here
-                    </p>
-
-                    <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
-                      {tech.name}
-                    </h1>
-                  </div>
-                </div>
-
-                {/* Main Heading */}
-                <h2 className="max-w-2xl text-3xl font-extrabold leading-[1.15] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-                  Turn your knowledge into
-                  <span className="mt-2 block text-primary">
-                    interview confidence.
-                  </span>
-                </h2>
-
-                {/* Supporting Description */}
-                <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                  Strengthen your {tech.name} fundamentals with focused
-                  interview questions, understand the concepts that matter,
-                  and take one step closer to your next developer role.
-                </p>
-
-                {/* Technology Tags */}
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {tech.tags.map((tag, index) => (
-                    <span
-                      key={tag}
-                      className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        index === 0
-                          ? "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-300"
-                          : "border-border bg-muted/30 text-muted-foreground hover:border-primary/30 hover:text-foreground"
-                      }`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <span className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200/80 bg-emerald-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                  <Target className="h-3 w-3" />
+                  {tech.difficulty}
+                </span>
               </div>
 
-              {/* Statistics Panel */}
-              <div className="grid shrink-0 grid-cols-2 gap-3 sm:max-w-sm lg:w-52 lg:grid-cols-1">
-                {/* Question Count */}
-                <div className="rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/40">
-                  <div className="mb-3 flex items-center gap-2 text-muted-foreground">
-                    <BookOpen className="h-4 w-4" />
-                    <span className="text-xs font-medium">Questions</span>
-                  </div>
-
-                  <p className="text-3xl font-black tracking-tight text-foreground">
-                    {questions.length}
-                  </p>
-
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    Ready to practice
-                  </p>
-                </div>
-
-                {/* Popularity */}
-                <div className="rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/40">
-                  <div className="mb-3 flex items-center gap-2 text-muted-foreground">
-                    <Flame className="h-4 w-4 text-amber-500" />
-                    <span className="text-xs font-medium">Popularity</span>
-                  </div>
-
-                  <p className="text-3xl font-black tracking-tight text-foreground">
-                    {tech.popularity}%
-                  </p>
-
-                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-border">
-                    <div
-                      className="h-full rounded-full bg-primary/70 transition-all duration-700"
-                      style={{ width: `${tech.popularity}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Motivation Banner */}
-            <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-amber-200/70 bg-amber-50/60 p-4 dark:border-amber-400/15 dark:bg-amber-400/5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300">
-                  <Sparkles className="h-4 w-4" />
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-2xs">
+                  <Image
+                    src={tech.logo}
+                    alt={`${tech.name} logo`}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                    unoptimized
+                  />
                 </div>
 
                 <div>
-                  <p className="text-sm font-bold text-foreground">
-                    Your next breakthrough starts here.
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Practice one question at a time and build the confidence
-                    to handle real technical interviews.
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900">
+                    {tech.name} Interview Questions
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-600 font-normal mt-1 leading-relaxed">
+                    Learn important concepts and prepare for your technical interviews.
                   </p>
                 </div>
               </div>
 
-              <span className="whitespace-nowrap text-xs font-bold text-amber-700 dark:text-amber-300">
-                Start your journey →
-              </span>
+              <div className="flex items-start gap-2.5 rounded-2xl border border-indigo-100 bg-indigo-50/60 px-4 py-3 text-xs sm:text-sm text-slate-700 font-medium">
+                <Sparkles className="h-4 w-4 text-indigo-600 shrink-0 mt-0.5" />
+                <p>
+                  We selected <span className="font-bold text-indigo-600">{questions.length} important questions</span> for you. Practice these to build strong knowledge and feel confident in your interviews!
+                </p>
+              </div>
+
             </div>
+
+            <div className="grid grid-cols-2 gap-3 shrink-0">
+              
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-br from-indigo-50/50 to-white p-4 text-center min-w-[120px] shadow-2xs">
+                <div className="flex items-center justify-center gap-1.5 text-slate-500 mb-1">
+                  <BookOpen className="h-3.5 w-3.5 text-indigo-600" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Questions</span>
+                </div>
+                <p className="text-xl sm:text-2xl font-black text-slate-900">
+                  {questions.length}
+                </p>
+              </div>
+
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-br from-amber-50/50 to-white p-4 text-center min-w-[120px] shadow-2xs">
+                <div className="flex items-center justify-center gap-1.5 text-slate-500 mb-1">
+                  <Flame className="h-3.5 w-3.5 text-amber-500" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Popularity</span>
+                </div>
+                <p className="text-xl sm:text-2xl font-black text-slate-900">
+                  {tech.popularity}%
+                </p>
+              </div>
+
+            </div>
+
           </div>
         </section>
 
-        {/* Questions Section */}
         {questions.length > 0 ? (
           <QuestionsSection questions={questions} itemsPerPage={10} />
         ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-20 text-center">
-            <BookOpen className="mx-auto h-10 w-10 text-muted-foreground/40" />
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-16 text-center space-y-3">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+              <BookOpen className="h-5 w-5" />
+            </div>
 
-            <h3 className="mt-4 text-lg font-bold text-foreground">
+            <h3 className="text-base font-bold text-slate-900">
               No questions available yet
             </h3>
 
-            <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-muted-foreground">
-              Check back soon as new {tech.name} interview questions are
-              published.
+            <p className="mx-auto max-w-sm text-xs text-slate-600 font-normal">
+              Check back soon as new {tech.name} interview questions are published.
             </p>
 
             <Link
               href="/explore"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:brightness-110"
+              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white transition-all hover:bg-slate-800 cursor-pointer"
             >
               Explore Other Technologies
               <ArrowLeft className="h-3.5 w-3.5 rotate-180" />
             </Link>
           </div>
         )}
+
       </main>
     </div>
   );

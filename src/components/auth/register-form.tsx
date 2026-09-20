@@ -131,7 +131,7 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="relative z-10 w-full max-w-md rounded-3xl border border-slate-200/90 bg-white/95 backdrop-blur-2xl shadow-[0_24px_60px_-15px_rgba(79,70,229,0.12)] font-urbanist p-6 sm:p-8">
+    <Card className="relative z-10 w-full max-w-md rounded-3xl border border-slate-200/90 bg-white/95 backdrop-blur-2xl shadow-[0_24px_60px_-15px_rgba(79,70,229,0.12)]  p-6 sm:p-8">
       
       {/* Brand Header Inside Card */}
       <div className="flex flex-col items-center text-center pb-6 border-b border-slate-100 mb-6">

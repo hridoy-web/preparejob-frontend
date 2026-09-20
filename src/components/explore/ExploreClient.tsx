@@ -9,7 +9,6 @@ import {
   Code2,
   Cpu,
   Layers,
-  LayoutGrid,
   Search,
   TrendingUp,
   SlidersHorizontal,
@@ -21,286 +20,193 @@ export function ExploreClient({
 }: {
   initialItems: TechItem[];
 }) {
-  const [selectedDifficulty, setSelectedDifficulty] =
-    useState<string>("All");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const [selectedCategory, setSelectedCategory] =
-    useState<string>("All");
-
-  // Get all available categories
   const categories = useMemo(() => {
     const set = new Set(initialItems.map((item) => item.category));
-
     return ["All", ...Array.from(set)];
   }, [initialItems]);
 
-  // Calculate category counts
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {
       All: initialItems.length,
     };
-
     initialItems.forEach((item) => {
       counts[item.category] = (counts[item.category] || 0) + 1;
     });
-
     return counts;
   }, [initialItems]);
 
-  // Calculate average popularity
   const avgPopularity = useMemo(() => {
     if (initialItems.length === 0) return 0;
-
-    const total = initialItems.reduce(
-      (sum, item) => sum + item.popularity,
-      0
-    );
-
+    const total = initialItems.reduce((sum, item) => sum + item.popularity, 0);
     return Math.round(total / initialItems.length);
   }, [initialItems]);
 
-  // Filter technologies
   const filteredItems = useMemo(() => {
     return initialItems.filter((item) => {
       const matchesDifficulty =
-        selectedDifficulty === "All" ||
-        item.difficulty === selectedDifficulty;
-
+        selectedDifficulty === "All" || item.difficulty === selectedDifficulty;
       const matchesCategory =
-        selectedCategory === "All" ||
-        item.category === selectedCategory;
-
+        selectedCategory === "All" || item.category === selectedCategory;
       return matchesDifficulty && matchesCategory;
     });
   }, [initialItems, selectedDifficulty, selectedCategory]);
 
-  // Check for active filters
   const hasActiveFilters =
     selectedDifficulty !== "All" || selectedCategory !== "All";
 
-  // Reset all filters
   const resetFilters = () => {
     setSelectedDifficulty("All");
     setSelectedCategory("All");
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 text-foreground">
-      {/* =====================================================
-          HERO SECTION
-      ===================================================== */}
-      <section className="relative overflow-hidden border-b border-border bg-background py-16 md:py-24">
+    <div className="min-h-screen bg-background pb-20 text-foreground font-lexend">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden border-b border-border bg-background py-10 md:py-14">
         <div className="container relative mx-auto px-4 text-center">
-          {/* Eyebrow */}
-          <div className="mx-auto mb-7 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground shadow-sm">
+
+          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground shadow-xs">
             <Sparkles className="h-3.5 w-3.5 text-foreground" />
-
             <span>YOUR JOURNEY TO TECHNICAL MASTERY</span>
-
             <span className="ml-1 h-1 w-1 rounded-full bg-foreground/40" />
           </div>
 
-          {/* Main Heading */}
-          <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-[-0.04em] text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="mx-auto max-w-4xl text-3xl font-extrabold leading-[1.1] tracking-[-0.04em] text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
             <span className="block">
               Master{" "}
               <span className="relative inline-block">
                 Technologies
-
-                <span
-                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-foreground/80 sm:-bottom-2"
-                  aria-hidden="true"
-                />
+                <span className="absolute -bottom-1 left-0 h-[2.5px] w-full rounded-full bg-foreground/80 sm:-bottom-1.5" aria-hidden="true" />
               </span>
               .
             </span>
-
-            <span className="mt-2 block text-muted-foreground md:mt-3">
+            <span className="mt-1 block text-muted-foreground md:mt-2">
               Ace Your Next Interview.
             </span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="mx-auto mt-7 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base md:mt-8 md:leading-8">
-            Explore the technologies that power the modern web. Build your
-            knowledge, sharpen your skills, and prepare for the technical
-            questions that matter most.
+          <p className="mx-auto mt-4 max-w-xl text-xs leading-6 text-muted-foreground sm:text-sm md:leading-7">
+            Explore the technologies that power the modern web. Build your knowledge, sharpen your skills, and prepare for the technical questions that matter most.
           </p>
 
-          {/* Statistics */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 text-xs font-medium text-muted-foreground sm:mt-10 sm:gap-3">
-            {/* Core Topics */}
-            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs font-medium text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
               <Code2 className="h-3.5 w-3.5 text-foreground" />
               <span>{initialItems.length} Core Topics</span>
             </div>
-
-            {/* Categories */}
-            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
               <Cpu className="h-3.5 w-3.5 text-foreground" />
               <span>{categories.length - 1} Categories</span>
             </div>
-
-            {/* Popularity */}
-            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 transition-colors hover:bg-muted/60">
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
               <TrendingUp className="h-3.5 w-3.5 text-foreground" />
               <span>{avgPopularity}% Avg. Popularity</span>
             </div>
           </div>
+
         </div>
       </section>
 
-      {/* =====================================================
-          MAIN CONTENT
-      ===================================================== */}
-      <main className="container mx-auto px-4 pt-8">
-        {/* =====================================================
-            RESPONSIVE FILTER BAR
-        ===================================================== */}
-        <div className="mb-8 rounded-2xl border border-border bg-card p-2 shadow-sm">
-          <div className="space-y-3 rounded-xl bg-muted/30 p-3 sm:p-4">
+      {/* Main Content */}
+      <main className="container mx-auto px-4 pt-6">
 
-            {/* ---------------------------------------------
-                CATEGORY FILTERS
-            --------------------------------------------- */}
-            <div className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
+        {/* Filter Section */}
+        <div className="mb-6 rounded-3xl border border-slate-200/80 bg-white/90 p-4 sm:p-5 shadow-sm backdrop-blur-md space-y-4">
 
-              {/* Category Label */}
-              <div className="flex shrink-0 items-center gap-2 px-1">
-                <Layers className="h-4 w-4 text-[var(--color-brand-accent)]" />
-
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Prepare For
-                </span>
-              </div>
-
-              {/* Category Pills */}
-              <div className="w-full min-w-0 overflow-x-auto scrollbar-none">
-                <div className="flex w-max items-center gap-1.5 rounded-xl border border-border/70 bg-background p-1">
-
-                  {categories.map((category) => {
-                    const isActive = selectedCategory === category;
-                    const count = categoryCounts[category] || 0;
-
-                    return (
-                      <button
-                        key={category}
-                        type="button"
-                        onClick={() => setSelectedCategory(category)}
-                        aria-pressed={isActive}
-                        className={`group inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all duration-200 ${
-                          isActive
-                            ? "bg-[var(--color-brand-accent)] text-white shadow-sm"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        }`}
-                      >
-                        <span>{category}</span>
-
-                        <span
-                          className={`flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold ${
-                            isActive
-                              ? "bg-white/20 text-white"
-                              : "bg-muted text-muted-foreground group-hover:bg-background"
-                          }`}
-                        >
-                          {count}
-                        </span>
-                      </button>
-                    );
-                  })}
-
-                </div>
-              </div>
+          {/* Top Row: Header & Action Buttons */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2 text-slate-700">
+              <Layers className="h-4 w-4 text-indigo-600" />
+              <span className="text-xs font-bold uppercase tracking-wider">Prepare For Categories</span>
             </div>
 
-            {/* ---------------------------------------------
-                DIVIDER
-            --------------------------------------------- */}
-            <div className="h-px w-full bg-border/60 lg:hidden" />
-
-            {/* ---------------------------------------------
-                DIFFICULTY + CLEAR FILTERS
-            --------------------------------------------- */}
-            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
-
-              {/* Difficulty Filters */}
-              <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center">
-
-                <div className="flex shrink-0 items-center gap-2 px-1">
-                  <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
-
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground sm:hidden">
-                    Difficulty
-                  </span>
-                </div>
-
-                <div className="w-full min-w-0 overflow-x-auto scrollbar-none">
-                  <div className="flex w-max items-center gap-1 rounded-xl border border-border/70 bg-background p-1">
-
-                    {["All", "Beginner", "Intermediate", "Advanced"].map(
-                      (level) => {
-                        const isActive = selectedDifficulty === level;
-
-                        return (
-                          <Button
-                            key={level}
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedDifficulty(level)}
-                            className={`h-8 shrink-0 rounded-lg px-3 text-xs font-semibold transition-all duration-200 ${
-                              isActive
-                                ? "bg-foreground text-background shadow-sm hover:bg-foreground/90 hover:text-background"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                            }`}
-                          >
-                            {level}
-                          </Button>
-                        );
-                      }
-                    )}
-
-                  </div>
-                </div>
-              </div>
-
-              {/* Clear Filters */}
+            <div className="flex items-center gap-3">
               {hasActiveFilters && (
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="group inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:border-0"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-950 cursor-pointer"
                 >
-                  <X className="h-3.5 w-3.5 transition-transform group-hover:rotate-90" />
-                  Clear
+                  <X className="h-3.5 w-3.5" />
+                  Clear Filters
                 </button>
               )}
-            </div>
 
-            {/* ---------------------------------------------
-                TOPIC COUNTER
-            --------------------------------------------- */}
-            <div className="flex items-center justify-between border-t border-border/60 pt-3 lg:justify-end lg:border-t-0 lg:pt-0">
-
-              <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-xs font-medium text-muted-foreground shadow-xs">
-                <LayoutGrid className="h-3.5 w-3.5" />
-
-                <span>
-                  Showing{" "}
-                  <span className="font-bold text-foreground">
-                    {filteredItems.length}
-                  </span>{" "}
-                  topics
-                </span>
+              <div className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50 px-3.5 py-1.5 text-xs font-semibold text-slate-700">
+                <span>Showing <span className="text-indigo-600 font-bold">{filteredItems.length}</span> topics</span>
               </div>
-
             </div>
           </div>
+
+          {/* Bottom Area: Completely Separate Scrollable Sections */}
+          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+
+            {/* Category Pills (Independent Scroll Container) */}
+            <div className="w-full overflow-x-auto pb-2 xl:pb-0 scrollbar-thin">
+              <div className="flex items-center gap-1.5 w-max bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60">
+                {categories.map((category) => {
+                  const isActive = selectedCategory === category;
+                  const count = categoryCounts[category] || 0;
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => setSelectedCategory(category)}
+                      className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-xs font-semibold transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-indigo-600 text-white shadow-xs"
+                          : "text-slate-600 hover:bg-white hover:text-slate-950"
+                      }`}
+                    >
+                      <span>{category}</span>
+                      <span className={`flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold ${
+                        isActive ? "bg-white/20 text-white" : "bg-slate-200 text-slate-600"
+                      }`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Difficulty Filter (Separate Box & Independent Scroll Container) */}
+            <div className="w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0 shrink-0 scrollbar-thin">
+              <div className="flex items-center gap-2 w-max">
+                <div className="flex items-center gap-1.5 text-slate-500 pr-1">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider">Level:</span>
+                </div>
+                <div className="flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60">
+                  {["All", "Beginner", "Intermediate", "Advanced"].map((level) => {
+                    const isActive = selectedDifficulty === level;
+                    return (
+                      <button
+                        key={level}
+                        type="button"
+                        onClick={() => setSelectedDifficulty(level)}
+                        className={`inline-flex h-9 shrink-0 items-center rounded-xl px-3.5 text-xs font-semibold transition-all cursor-pointer ${
+                          isActive
+                            ? "bg-slate-950 text-white shadow-xs"
+                            : "text-slate-600 hover:bg-white hover:text-slate-950"
+                        }`}
+                      >
+                        {level}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
-        {/* =====================================================
-            TECHNOLOGY CARDS
-        ===================================================== */}
+        {/* Technology Cards Grid */}
         {filteredItems.length > 0 ? (
           <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredItems.map((item, index) => (
@@ -317,26 +223,21 @@ export function ExploreClient({
             ))}
           </div>
         ) : (
-          /* Empty State */
-          <div className="space-y-3 rounded-2xl border border-dashed border-border bg-card/30 px-4 py-16 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-              <Search className="h-5 w-5 text-muted-foreground" />
+          <div className="space-y-3 rounded-3xl border border-dashed border-slate-200 bg-slate-50/50 px-4 py-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+              <Search className="h-5 w-5" />
             </div>
-
-            <p className="text-base font-bold text-foreground">
+            <p className="text-base font-bold text-slate-900">
               No matching technologies found
             </p>
-
-            <p className="mx-auto max-w-sm text-xs text-muted-foreground">
-              There are no available topics matching your selected difficulty
-              level for this category.
+            <p className="mx-auto max-w-sm text-xs text-slate-500">
+              There are no available topics matching your selected difficulty level for this category.
             </p>
-
             <Button
               variant="outline"
               size="sm"
               onClick={resetFilters}
-              className="mt-2 rounded-lg text-xs font-semibold"
+              className="mt-2 rounded-xl text-xs font-semibold cursor-pointer"
             >
               Reset Filters
             </Button>

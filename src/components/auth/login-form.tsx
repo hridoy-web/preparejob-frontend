@@ -77,7 +77,7 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="relative z-10 w-full max-w-md rounded-3xl border border-slate-200/90 bg-white/95 backdrop-blur-2xl shadow-[0_24px_60px_-15px_rgba(79,70,229,0.12)] font-urbanist p-6 sm:p-8">
+    <Card className="relative z-10 w-full max-w-md rounded-3xl border border-slate-200/90 bg-white/95 backdrop-blur-2xl shadow-[0_24px_60px_-15px_rgba(79,70,229,0.12)]  p-6 sm:p-8">
       
       {/* SaaS Style Brand Header Inside Card */}
       <div className="flex flex-col items-center text-center pb-6 border-b border-slate-100 mb-6">
@@ -183,7 +183,7 @@ export function LoginForm() {
           <Button
             type="submit"
             disabled={isLoading || isGoogleLoading}
-            className="w-full h-12 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-500/25 transition-all duration-200 mt-2 cursor-pointer"
+            className="w-full h-12 rounded-xl bg-indigo-600  text-white hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-500/25 transition-all duration-200 mt-2 cursor-pointer"
           >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             Sign In to PrepareJob
