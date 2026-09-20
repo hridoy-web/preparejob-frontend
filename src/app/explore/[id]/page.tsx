@@ -23,7 +23,7 @@ export default async function ExploreDetailPage({
     notFound();
   }
 
-  const response = await getAllQuestions({ technology: id });
+  const response = await getAllQuestions({ technology: id, limit: 100 });
   const questions: Question[] = response?.data?.questions || [];
 
   return (
