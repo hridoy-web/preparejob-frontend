@@ -30,7 +30,8 @@ import { toast } from "sonner";
 import { getAllQuestions, deleteQuestion } from "@/lib/apiActions/questionApi";
 
 interface IQuestion {
-  _id: string;
+  _id?: string;
+  id?: string;
   title: string;
   technology: string;
   difficulty: string;
@@ -56,7 +57,15 @@ const getTechBadgeStyle = (tech: string) => {
     case "nextjs": case "next": return "bg-slate-900 text-white border-slate-700";
     case "expressjs": case "express": return "bg-neutral-200 text-neutral-800 border-neutral-400";
     case "mongodb": case "mongo": return "bg-green-100 text-green-800 border-green-300";
-    case "tailwind": case "tailwindcss": return "bg-sky-100 text-sky-800 border-sky-300";
+    case "mongoose": return "bg-emerald-100 text-emerald-900 border-emerald-300";
+    case "tailwind-css": case "tailwind": return "bg-sky-100 text-sky-800 border-sky-300";
+    case "css3": return "bg-blue-50 text-blue-700 border-blue-200";
+    case "html5": return "bg-orange-50 text-orange-700 border-orange-200";
+    case "postgresql": return "bg-indigo-100 text-indigo-800 border-indigo-300";
+    case "prisma": return "bg-purple-100 text-purple-800 border-purple-300";
+    case "redis": return "bg-rose-100 text-rose-800 border-rose-300";
+    case "git-github": return "bg-stone-200 text-stone-800 border-stone-300";
+    case "docker": return "bg-sky-50 text-sky-700 border-sky-200";
     default: return "bg-slate-100 text-slate-800 border-slate-200";
   }
 };
@@ -86,7 +95,7 @@ export default function AdminQuestionsPage() {
   const [selectedQuestion, setSelectedQuestion] = useState<IQuestion | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
-  // Separate Page State to prevent cascading render error
+  // Pagination State
   const [page, setPage] = useState<number>(1);
   const [pagination, setPagination] = useState<IPagination>({
     currentPage: 1,
@@ -121,7 +130,6 @@ export default function AdminQuestionsPage() {
     }
   }, []);
 
-  // Safe data loading effect without synchronous setState warnings
   useEffect(() => {
     let isSubscribed = true;
 
@@ -181,10 +189,12 @@ export default function AdminQuestionsPage() {
 
   const handleDeleteConfirm = async () => {
     if (!selectedQuestion) return;
+    const targetId = selectedQuestion._id || selectedQuestion.id;
+    if (!targetId) return;
 
     try {
-      setDeletingId(selectedQuestion._id);
-      await deleteQuestion(selectedQuestion._id);
+      setDeletingId(targetId);
+      await deleteQuestion(targetId);
       toast.success("Question deleted successfully!");
       fetchQuestionsData(page, selectedTech, selectedDifficulty, debouncedSearch);
       setIsDeleteDialogOpen(false);
@@ -210,7 +220,7 @@ export default function AdminQuestionsPage() {
         </div>
         <Button
           asChild
-          className="text-white h-10 sm:h-11 bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs shrink-0 text-xs sm:text-sm"
+          className="text-white h-10 sm:h-11 bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs shrink-0 text-xs sm:text-sm cursor-pointer"
         >
           <Link href="/admin/questions/create">
             <Plus className="size-4 mr-1" /> Add New Question
@@ -235,7 +245,7 @@ export default function AdminQuestionsPage() {
             <select
               value={selectedTech}
               onChange={(e) => handleTechChange(e.target.value)}
-              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 md:w-40"
+              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 md:w-44 cursor-pointer"
             >
               <option value="">All Tech</option>
               <option value="javascript">JavaScript</option>
@@ -245,13 +255,20 @@ export default function AdminQuestionsPage() {
               <option value="nextjs">Next.js</option>
               <option value="expressjs">Express.js</option>
               <option value="mongodb">MongoDB</option>
-              <option value="tailwind">Tailwind</option>
+              <option value="mongoose">Mongoose</option>
+              <option value="tailwind-css">Tailwind CSS</option>
+              <option value="css3">CSS3</option>
+              <option value="html5">HTML5</option>
+              <option value="postgresql">PostgreSQL</option>
+              <option value="prisma">Prisma ORM</option>
+              <option value="git-github">Git & GitHub</option>
+              <option value="docker">Docker</option>
             </select>
 
             <select
               value={selectedDifficulty}
               onChange={(e) => handleDifficultyChange(e.target.value)}
-              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 md:w-36"
+              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1 md:w-36 cursor-pointer"
             >
               <option value="">All Difficulty</option>
               <option value="Easy">Easy</option>
@@ -264,7 +281,7 @@ export default function AdminQuestionsPage() {
                 variant="ghost"
                 onClick={clearFilters}
                 size="icon"
-                className="h-10 size-10 rounded-xl text-slate-500 hover:text-slate-900 shrink-0"
+                className="h-10 size-10 rounded-xl text-slate-500 hover:text-slate-900 shrink-0 cursor-pointer"
               >
                 <X className="size-4" />
               </Button>
@@ -303,98 +320,129 @@ export default function AdminQuestionsPage() {
                   </td>
                 </tr>
               ) : (
-                questions.map((q) => (
-                  <tr key={q._id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="px-4 sm:px-5 py-4 font-semibold text-slate-900 max-w-xs sm:max-w-md truncate">
-                      {q.title}
-                    </td>
-                    <td className="px-3 sm:px-4 py-4">
-                      <span className={`inline-flex items-center font-bold px-2.5 py-1 rounded-md text-[10px] sm:text-xs border uppercase tracking-wide shrink-0 ${getTechBadgeStyle(q.technology)}`}>
-                        {q.technology}
-                      </span>
-                    </td>
-                    <td className="px-3 sm:px-4 py-4">
-                      <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 before:size-1.5 before:rounded-full ${getDifficultyBadgeStyle(q.difficulty)}`}>
-                        {q.difficulty}
-                      </span>
-                    </td>
-                    <td className="px-3 sm:px-4 py-4">
-                      <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 font-medium px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs shrink-0">
-                        <Star className="size-3 text-amber-500 shrink-0" />
-                        {q.importanceTag}
-                      </span>
-                    </td>
-                    <td className="px-4 sm:px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 sm:gap-1.5">
-                        {/* View Button */}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setViewQuestion(q)}
-                          className="size-8 p-0 rounded-lg text-slate-600 hover:bg-slate-100"
-                        >
-                          <Eye className="size-4" />
-                        </Button>
+                questions.map((q) => {
+                  const qId = q._id || q.id;
+                  return (
+                    <tr key={qId} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-4 sm:px-5 py-4 font-semibold text-slate-900 max-w-xs sm:max-w-md truncate">
+                        {q.title}
+                      </td>
+                      <td className="px-3 sm:px-4 py-4">
+                        <span className={`inline-flex items-center font-bold px-2.5 py-1 rounded-md text-[10px] sm:text-xs border uppercase tracking-wide shrink-0 ${getTechBadgeStyle(q.technology)}`}>
+                          {q.technology}
+                        </span>
+                      </td>
+                      <td className="px-3 sm:px-4 py-4">
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 before:size-1.5 before:rounded-full ${getDifficultyBadgeStyle(q.difficulty)}`}>
+                          {q.difficulty}
+                        </span>
+                      </td>
+                      <td className="px-3 sm:px-4 py-4">
+                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 font-medium px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs shrink-0">
+                          <Star className="size-3 text-amber-500 shrink-0" />
+                          {q.importanceTag}
+                        </span>
+                      </td>
+                      <td className="px-4 sm:px-5 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                          {/* View Button */}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setViewQuestion(q)}
+                            className="size-8 p-0 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer"
+                          >
+                            <Eye className="size-4" />
+                          </Button>
 
-                        {/* Edit Button */}
-                        <Button
-                          asChild
-                          size="sm"
-                          variant="ghost"
-                          className="size-8 p-0 rounded-lg text-indigo-600 hover:bg-indigo-50"
-                        >
-                          <Link href={`/admin/questions/edit/${q._id}`}>
-                            <Edit3 className="size-4" />
-                          </Link>
-                        </Button>
+                          {/* Edit Button */}
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="ghost"
+                            className="size-8 p-0 rounded-lg text-indigo-600 hover:bg-indigo-50 cursor-pointer"
+                          >
+                            <Link href={`/admin/questions/edit/${qId}`}>
+                              <Edit3 className="size-4" />
+                            </Link>
+                          </Button>
 
-                        {/* Delete Button */}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedQuestion(q);
-                            setIsDeleteDialogOpen(true);
-                          }}
-                          className="size-8 p-0 rounded-lg text-rose-600 hover:bg-rose-50"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                          {/* Delete Button */}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setSelectedQuestion(q);
+                              setIsDeleteDialogOpen(true);
+                            }}
+                            className="size-8 p-0 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Improved Pagination with Number Buttons */}
         {pagination.totalPages > 1 && (
-          <div className="px-4 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <div className="px-4 py-3.5 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
             <div>
               Showing <span className="font-semibold text-slate-800">{questions.length}</span> of{" "}
               <span className="font-semibold text-slate-800">{pagination.totalQuestions}</span> questions
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-1">
               <Button
                 variant="outline"
                 size="sm"
                 disabled={page <= 1 || loading}
-                onClick={() => setPage((prev) => prev - 1)}
-                className="h-8 px-2.5 rounded-lg border-slate-200"
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                className="h-8 px-2.5 rounded-lg border-slate-200 cursor-pointer text-xs"
               >
-                <ChevronLeft className="size-4 mr-1" /> Previous
+                <ChevronLeft className="size-4 mr-1" /> Prev
               </Button>
-              <span className="font-medium text-slate-700">
-                {pagination.currentPage} / {pagination.totalPages}
-              </span>
+
+              {/* Dynamic Page Numbers */}
+              <div className="flex items-center gap-1">
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                  .filter((p) => {
+                    // Show first, last, current, and surrounding pages for cleanliness if total is large
+                    return p === 1 || p === pagination.totalPages || Math.abs(p - page) <= 1;
+                  })
+                  .map((p, idx, arr) => {
+                    const showEllipsisBefore = idx > 0 && p - arr[idx - 1] > 1;
+                    return (
+                      <span key={p} className="flex items-center gap-1">
+                        {showEllipsisBefore && <span className="px-1 text-slate-400">...</span>}
+                        <Button
+                          variant={page === p ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setPage(p)}
+                          className={`h-8 w-8 p-0 rounded-lg text-xs font-semibold cursor-pointer ${
+                            page === p
+                              ? "bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-xs"
+                              : "border-slate-200 text-slate-700 hover:bg-slate-100"
+                          }`}
+                        >
+                          {p}
+                        </Button>
+                      </span>
+                    );
+                  })}
+              </div>
+
               <Button
                 variant="outline"
                 size="sm"
                 disabled={page >= pagination.totalPages || loading}
-                onClick={() => setPage((prev) => prev + 1)}
-                className="h-8 px-2.5 rounded-lg border-slate-200"
+                onClick={() => setPage((prev) => Math.min(prev + 1, pagination.totalPages))}
+                className="h-8 px-2.5 rounded-lg border-slate-200 cursor-pointer text-xs"
               >
                 Next <ChevronRight className="size-4 ml-1" />
               </Button>
@@ -442,7 +490,7 @@ export default function AdminQuestionsPage() {
             <Button
               type="button"
               onClick={() => setViewQuestion(null)}
-              className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm h-10 px-4"
+              className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm h-10 px-4 cursor-pointer"
             >
               Close
             </Button>
@@ -479,7 +527,7 @@ export default function AdminQuestionsPage() {
               variant="outline"
               disabled={Boolean(deletingId)}
               onClick={() => setIsDeleteDialogOpen(false)}
-              className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-medium text-xs sm:text-sm h-10 px-4"
+              className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 font-medium text-xs sm:text-sm h-10 px-4 cursor-pointer"
             >
               Cancel
             </Button>
@@ -487,7 +535,7 @@ export default function AdminQuestionsPage() {
               type="button"
               disabled={Boolean(deletingId)}
               onClick={handleDeleteConfirm}
-              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs sm:text-sm h-10 px-4 shadow-sm inline-flex items-center justify-center gap-1.5"
+              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs sm:text-sm h-10 px-4 shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {deletingId ? (
                 <>
