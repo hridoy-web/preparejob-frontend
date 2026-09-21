@@ -66,9 +66,6 @@ We built this platform to make your preparation simple and fast—allowing you t
 | **Md. Golam Rabbi** | [@golamrabbi73](https://github.com/golamrabbi73) | **Frontend:** Designed home and blog pages, integrated related APIs, and built search, pagination, and category filters. |
 | **Kibriya Amit** | [@kibriya41](https://github.com/kibriya41) | **Frontend:** Built responsive navigation components, authentication flows, Interview Questions Resource page design, and related API integrations including category filters and pagination systems. |
 | **MD Rakib Al hasan** | [@rakibhasan197](https://github.com/rakibhasan197) | **Frontend:** Contributed to home page design. |
-| **Shihab Bhuiya** | [@shihab-bhuiya](https://github.com/shihab-bhuiya) | **Backend:** Created the question APIs, for example creating questions, handling question filtering, updates, and pagination. |
-| **Anim** | [@anim710](https://github.com/anim710) | **Backend:** Created user and admin dashboard APIs, stats tracking, bookmarks, and user management features. |
-| **Shihab Ul Islam** | [@shihab-5](https://github.com/shihab-5) | **Backend:** Created the blogs page APIs, for example handling post creation, updates, comments, and likes. |
 
 ---
 
