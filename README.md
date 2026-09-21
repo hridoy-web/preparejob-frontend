@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎯 Prepare Tech Interviews. Crack Your Dream Job.
 
-## Getting Started
+Got a recruiter response or interview call? Don't waste valuable time searching through random AI prompts or messy articles. Get straight to the point with our handpicked, high-impact technical questions designed specifically to help you clear interviews smoothly.
 
-First, run the development server:
+<p align="left">
+  <a href="https://preparejob.infozia.site" target="_blank"><img src="https://img.shields.io/badge/🌐_Explore_Live_Website-0ea5e9?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Live Site" /></a> &nbsp;&nbsp;
+  <a href="https://github.com/hridoy-web/preparejob-frontend" target="_blank"><img src="https://img.shields.io/badge/💻_Frontend_Repository-18181b?style=for-the-badge&logo=github&logoColor=white" alt="Frontend Repo" /></a> &nbsp;&nbsp;
+  <a href="https://github.com/hridoy-web/preparejob-backend" target="_blank"><img src="https://img.shields.io/badge/⚙️_Backend_Repository-10b981?style=for-the-badge&logo=github&logoColor=white" alt="Backend Repo" /></a>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔒 Terms of Use & Learning Policy
+> **This platform is strictly intended for personal learning and technical interview preparation. You are welcome to explore the live website, learn high-impact technical questions, and expand your knowledge. However, you are not permitted to copy the source code, assets, or question sets to claim them as your own or use them outside of personal educational purposes.**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 About PrepareJob & Our Mission
 
-## Learn More
+When you finally land that much-awaited interview call, every single minute counts. Instead of wasting hours hunting down scattered resources, **PrepareJob** gives you an organized, step-by-step roadmap. 
 
-To learn more about Next.js, take a look at the following resources:
+We built this platform to make your preparation simple and fast—allowing you to transition smoothly from receiving an interview call to mastering core concepts without any hassle.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### ✨ Why Developers Rely on PrepareJob:
+* **🎯 Focused & Practical Learning:** Spanning **15+ essential tech stacks**, our curated question sets cut through the noise so you can focus strictly on what top recruiters actually ask.
+* **🧠 Designed for Fast Retention:** Every topic features short explanations and simple key points to help you memorize core concepts and easily handle interview questions.
+* **⚖️ Dual-Level Perspective:** Access both **Easy/Beginner-Friendly** and **Advanced/In-Depth** answers to match your exact level of knowledge.
+* **🔖 Smart Interview Bookmarking:** Save tricky questions on the fly and practice them directly from your user dashboard right before stepping into an interview.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📸 Platform Interface & Dashboard Preview
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 1. Hero & Landing Interface
+<p align="left">
+  <img src="https://github.com/hridoy-web/preparejob-frontend/blob/main/public/preparejob_images/prepareJobHero.png" alt="PrepareJob Hero Section" width="90%" />
+</p>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2. Targeted Question Bank & Delivery System
+<p align="left">
+  <img src="https://github.com/hridoy-web/preparejob-frontend/blob/main/public/preparejob_images/prepareJob_Questions_provide_system_image.png" alt="Question Delivery System" width="90%" />
+</p>
+
+### 3. User Dashboard & Bookmarked Questions Hub
+<p align="left">
+  <img src="https://github.com/hridoy-web/preparejob-frontend/blob/main/public/preparejob_images/user_dashboard_bookamrks_Questions_image.png" alt="User Bookmarks Dashboard" width="90%" />
+</p>
+
+---
+
+## 🛠️ Tech Stack & Tools
+
+* **Frontend:** Next.js, Tailwind CSS, shadcnUI, Lucide Icons, React Icons
+* **Backend:** Node.js, Express.js, REST APIs
+* **Database & ODM:** MongoDB, Mongoose
+* **Authentication:** Better Auth
+* **Media & Asset Management:** Cloudinary (Used across both frontend & backend)
+
+---
+
+## 👥 Core Development Team & Contributions
+
+| Contributor | GitHub Profile | Role & Contributions |
+| :--- | :--- | :--- |
+| **Hridoy Chowdhury** *(Team Lead)* | [@hridoy-web](https://github.com/hridoy-web) | **Full-Stack:** Managed overall project setup, folder structure, Mongoose models, Cloudinary setup, user & admin dashboards UI/UX, related API integrations, pure UI refactoring, and team workflow. |
+| **Md. Golam Rabbi** | [@golamrabbi73](https://github.com/golamrabbi73) | **Frontend:** Designed home and blog pages, integrated related APIs, and built search, pagination, and category filters. |
+| **Kibriya Amit** | [@kibriya41](https://github.com/kibriya41) | **Frontend:** Built responsive navigation components, authentication flows, Interview Questions Resource page design, and related API integrations including category filters and pagination systems. |
+| **MD Rakib Al hasan** | [@rakibhasan197](https://github.com/rakibhasan197) | **Frontend:** Contributed to home page design. |
+| **Shihab Bhuiya** | [@shihab-bhuiya](https://github.com/shihab-bhuiya) | **Backend:** Created the question APIs, for example creating questions, handling question filtering, updates, and pagination. |
+| **Anim** | [@anim710](https://github.com/anim710) | **Backend:** Created user and admin dashboard APIs, stats tracking, bookmarks, and user management features. |
+| **Shihab Ul Islam** | [@shihab-5](https://github.com/shihab-5) | **Backend:** Created the blogs page APIs, for example handling post creation, updates, comments, and likes. |
+
+---
+
+<div align="left">
+  <p>⭐ If you found this learning platform helpful, please give it a star on GitHub!</p>
+</div>
