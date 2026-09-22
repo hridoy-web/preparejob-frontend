@@ -62,7 +62,7 @@ We built this platform to make your preparation simple and fast—allowing you t
 
 | Contributor | GitHub Profile | Role & Contributions |
 | :--- | :--- | :--- |
-| **Hridoy Chowdhury** *(Team Lead)* | [@hridoy-web](https://github.com/hridoy-web) | **Full-Stack:** Managed overall project setup, folder structure, Mongoose models, Cloudinary setup, user & admin dashboards UI/UX, related API integrations, pure UI refactoring, and team workflow. |
+| **Hridoy Chowdhury** *(Team Lead)* | [@hridoy-web](https://github.com/hridoy-web) | **Full-Stack:** Managed overall project setup, user & admin dashboards UI/UX, related API integrations, UI refactoring, and team workflow. |
 | **Md. Golam Rabbi** | [@golamrabbi73](https://github.com/golamrabbi73) | **Frontend:** Designed home and blog pages, integrated related APIs, and built search, pagination, and category filters. |
 | **Kibriya Amit** | [@kibriya41](https://github.com/kibriya41) | **Frontend:** Built responsive navigation components, authentication flows, Interview Questions Resource page design, and related API integrations including category filters and pagination systems. |
 | **MD Rakib Al hasan** | [@rakibhasan197](https://github.com/rakibhasan197) | **Frontend:** Contributed to home page design. |
