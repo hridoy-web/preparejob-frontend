@@ -58,7 +58,7 @@ We built this platform to make your preparation simple and fast—allowing you t
 
 ---
 
-## 👥 Core Development Team & Contributions
+## 👥 Frontend Development Team & Contributions
 
 | Contributor | GitHub Profile | Contributions |
 | :--- | :--- | :--- |
