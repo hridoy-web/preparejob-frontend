@@ -3,7 +3,7 @@
 Got a recruiter response or interview call? Don't waste valuable time searching through random AI prompts or messy articles. Get straight to the point with our handpicked, high-impact technical questions designed specifically to help you clear interviews smoothly.
 
 <p align="left">
-  <a href="https://preparejob.infozia.site" target="_blank"><img src="https://img.shields.io/badge/🌐_Explore_Live_Website-0ea5e9?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Live Site" /></a> &nbsp;&nbsp;
+  <a href="https://preparejob.vercel.app" target="_blank"><img src="https://img.shields.io/badge/🌐_Explore_Live_Website-0ea5e9?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Live Site" /></a> &nbsp;&nbsp;
   <a href="https://github.com/hridoy-web/preparejob-frontend" target="_blank"><img src="https://img.shields.io/badge/💻_Frontend_Repository-18181b?style=for-the-badge&logo=github&logoColor=white" alt="Frontend Repo" /></a> &nbsp;&nbsp;
   <a href="https://github.com/hridoy-web/preparejob-backend" target="_blank"><img src="https://img.shields.io/badge/⚙️_Backend_Repository-10b981?style=for-the-badge&logo=github&logoColor=white" alt="Backend Repo" /></a>
 </p>
